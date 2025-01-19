@@ -1,0 +1,223 @@
+<html>
+  <head>
+    <title>Connect 4</title>
+    <script>
+      const board = [[],[],[],[],[],[],[]];
+      const nextPlayers = {
+        "1": "2",
+        "2": "1"
+      };
+      const playerColors = {
+        "1": "red",
+        "2": "yellow"
+      }
+      const gameState = {
+        player: "1"
+      }
+      function setPlayer() {
+        document.getElementById("player").innerHTML = `<circle cx="5" cy="5" r="5" fill="${playerColors[gameState.player]}"/>`;
+      }
+      function drawPieces() {
+        console.log({ board });
+        document.getElementById("pieces").innerHTML = board.reduce((outList, stack, columnIndex) => {
+          return stack.reduce((acc, slotPlayer, rowIndex) => {
+            return [].concat(acc, [`<circle cx="${(columnIndex * 10) + 5}" cy="${65 - (rowIndex * 10)}" r="5" fill="${playerColors[slotPlayer]}"/>`]);
+          }, outList);
+        }, []).join("");
+      }
+      function resetGame() {
+        board.forEach((stack) => {
+          while(stack.length > 0) {
+            stack.pop();
+          }
+        });
+        drawPieces();
+        gameState.player = "1";
+        setPlayer();
+      }
+      const fourInARowChecks = {
+        "rows":"columnIndex",
+        "columns":"rowIndex",
+        "diagonal1s":"rowIndex",
+        "diagonal2s":(counter) => {
+
+        }
+      };
+      function hasFourInARow(key, counter) {
+        if (counter.length < 4) {
+          return false;
+        }
+        const comparisonField = (key === "rows"?"columnIndex":"rowIndex");
+        const indicies = counter.map(obj => obj[comparisonField]);
+        indicies.sort();
+        return Array(indicies.length - 3).fill("").map((_,i) => indicies.slice(i,i+4)).filter(span => {
+          return span[span.length - 1] - span[0] === 3;
+        }).length > 0;
+      }
+      function checkGameState() {
+        const counters = board.reduce((outList, stack, columnIndex) => {
+          return [].concat(outList, stack.map((slotPlayer, rowIndex) => {
+            return { slotPlayer, rowIndex, columnIndex, diagonal1: rowIndex - columnIndex, diagonal2: rowIndex + columnIndex };
+          }));
+        }, []).filter(({ slotPlayer }) => slotPlayer === gameState.player).reduce(({ rows, columns, diagonal1s, diagonal2s }, { rowIndex, columnIndex, diagonal1, diagonal2 }) => {
+          rows[rowIndex] = [].concat((rows[rowIndex] || []), [{ rowIndex, columnIndex, diagonal1, diagonal2 }]);
+          columns[columnIndex] = [].concat((columns[columnIndex] || []), [{ rowIndex, columnIndex, diagonal1, diagonal2 }]);
+          diagonal1s[diagonal1] = [].concat((diagonal1s[diagonal1] || []), [{ rowIndex, columnIndex, diagonal1, diagonal2 }]);
+          diagonal2s[diagonal2] = [].concat((diagonal2s[diagonal2] || []), [{ rowIndex, columnIndex, diagonal1, diagonal2 }]);
+          return { rows, columns, diagonal1s, diagonal2s };
+        }, { rows: {}, columns: {}, diagonal1s: {}, diagonal2s: {} });
+        if (["rows","columns","diagonal1s","diagonal2s"].reduce((check,key) => {
+          return check || Object.values(counters[key]).filter(counter => hasFourInARow(key,counter)).length > 0;
+        }, false)) {
+          if (confirm(`"${playerColors[gameState.player]} has won! Would you like to play again?"`)) {
+            resetGame();
+          }
+        } else {
+          if (board.reduce((check, stack) => check && stack.length >= 6, true)) {
+            if (confirm(`The last move has been played and no one has won! Would you like to play again?"`)) {
+              resetGame();
+            }
+          } else {
+            gameState.player = nextPlayers[gameState.player];
+            setPlayer();
+          }
+        }
+      }
+      function selectColumn(e, anchor, index) {
+        e.preventDefault();
+        console.log({ index, board, anchor });
+        if (board[index].length < 6) {
+          board[index].push(gameState.player);
+          drawPieces();
+          checkGameState();
+        } else {
+          alert("No spaces available! Choose Again!");
+        }
+      }
+    </script>
+  </head>
+  <body style="text-align: center; background-color: #333;" onload="setPlayer()">
+    <h1 style="color: #fff">Connect 4</h1>
+    <svg width="10%" height="10%" viewBox="0 0 10 10">
+      <g id="player"></g>
+    </svg>
+    <svg width="100%" height="75%" viewBox="0 0 70 70">
+      <rect width="70" height="70" fill="darkblue"/>
+      <a href="#" onClick="selectColumn(event, this, 0)">
+        <circle cx="5" cy="5" r="4" fill="darkblue" stroke="white" stroke-width="0.5"/>
+      </a>
+      <a href="#" onClick="selectColumn(event, this, 1)">
+        <circle cx="15" cy="5" r="4" fill="darkblue" stroke="white" stroke-width="0.5"/>
+      </a>
+      <a href="#" onClick="selectColumn(event, this, 2)">
+        <circle cx="25" cy="5" r="4" fill="darkblue" stroke="white" stroke-width="0.5"/>
+      </a>
+      <a href="#" onClick="selectColumn(event, this, 3)">
+        <circle cx="35" cy="5" r="4" fill="darkblue" stroke="white" stroke-width="0.5"/>
+      </a>
+      <a href="#" onClick="selectColumn(event, this, 4)">
+        <circle cx="45" cy="5" r="4" fill="darkblue" stroke="white" stroke-width="0.5"/>
+      </a>
+      <a href="#" onClick="selectColumn(event, this, 5)">
+        <circle cx="55" cy="5" r="4" fill="darkblue" stroke="white" stroke-width="0.5"/>
+      </a>
+      <a href="#" onClick="selectColumn(event, this, 6)">
+        <circle cx="65" cy="5" r="4" fill="darkblue" stroke="white" stroke-width="0.5"/>
+      </a>
+      <g id="pieces"></g>
+      <path fill="cyan"
+      d="M 0,0 L 0,10
+      L 1,10 1,15 A 4,4 0 0 0 9,15 A 4,4 0 1 0 1,15 L 1,10 
+      L 11,10 11,15 A 4,4 0 0 0 19,15 A 4,4 0 1 0 11,15 L 11,10 
+      L 21,10 21,15 A 4,4 0 0 0 29,15 A 4,4 0 1 0 21,15 L 21,10 
+      L 31,10 31,15 A 4,4 0 0 0 39,15 A 4,4 0 1 0 31,15 L 31,10 
+      L 41,10 41,15 A 4,4 0 0 0 49,15 A 4,4 0 1 0 41,15 L 41,10 
+      L 51,10 51,15 A 4,4 0 0 0 59,15 A 4,4 0 1 0 51,15 L 51,10 
+      L 61,10 61,15 A 4,4 0 0 0 69,15 A 4,4 0 1 0 61,15 L 61,10 
+      L 70,10 70,20, 0,20
+      L 1,20 1,25 A 4,4 0 0 0 9,25 A 4,4 0 1 0 1,25 L 1,20 
+      L 11,20 11,25 A 4,4 0 0 0 19,25 A 4,4 0 1 0 11,25 L 11,20 
+      L 21,20 21,25 A 4,4 0 0 0 29,25 A 4,4 0 1 0 21,25 L 21,20 
+      L 31,20 31,25 A 4,4 0 0 0 39,25 A 4,4 0 1 0 31,25 L 31,20 
+      L 41,20 41,25 A 4,4 0 0 0 49,25 A 4,4 0 1 0 41,25 L 41,20 
+      L 51,20 51,25 A 4,4 0 0 0 59,25 A 4,4 0 1 0 51,25 L 51,20 
+      L 61,20 61,25 A 4,4 0 0 0 69,25 A 4,4 0 1 0 61,25 L 61,20 
+      L 70,20 L 70,30, 0,30
+      L 1,30 1,35 A 4,4 0 0 0 9,35 A 4,4 0 1 0 1,35 L 1,30 
+      L 11,30 11,35 A 4,4 0 0 0 19,35 A 4,4 0 1 0 11,35 L 11,30 
+      L 21,30 21,35 A 4,4 0 0 0 29,35 A 4,4 0 1 0 21,35 L 21,30 
+      L 31,30 31,35 A 4,4 0 0 0 39,35 A 4,4 0 1 0 31,35 L 31,30 
+      L 41,30 41,35 A 4,4 0 0 0 49,35 A 4,4 0 1 0 41,35 L 41,30 
+      L 51,30 51,35 A 4,4 0 0 0 59,35 A 4,4 0 1 0 51,35 L 51,30 
+      L 61,30 61,35 A 4,4 0 0 0 69,35 A 4,4 0 1 0 61,35 L 61,30 
+      L 70,30 L 70,40, 0,40
+      L 1,40 1,45 A 4,4 0 0 0 9,45 A 4,4 0 1 0 1,45 L 1,40 
+      L 11,40 11,45 A 4,4 0 0 0 19,45 A 4,4 0 1 0 11,45 L 11,40 
+      L 21,40 21,45 A 4,4 0 0 0 29,45 A 4,4 0 1 0 21,45 L 21,40 
+      L 31,40 31,45 A 4,4 0 0 0 39,45 A 4,4 0 1 0 31,45 L 31,40 
+      L 41,40 41,45 A 4,4 0 0 0 49,45 A 4,4 0 1 0 41,45 L 41,40 
+      L 51,40 51,45 A 4,4 0 0 0 59,45 A 4,4 0 1 0 51,45 L 51,40 
+      L 61,40 61,45 A 4,4 0 0 0 69,45 A 4,4 0 1 0 61,45 L 61,40 
+      L 70,40 L 70,50, 0,50
+      L 1,50 1,55 A 4,4 0 0 0 9,55 A 4,4 0 1 0 1,55 L 1,50 
+      L 11,50 11,55 A 4,4 0 0 0 19,55 A 4,4 0 1 0 11,55 L 11,50 
+      L 21,50 21,55 A 4,4 0 0 0 29,55 A 4,4 0 1 0 21,55 L 21,50 
+      L 31,50 31,55 A 4,4 0 0 0 39,55 A 4,4 0 1 0 31,55 L 31,50 
+      L 41,50 41,55 A 4,4 0 0 0 49,55 A 4,4 0 1 0 41,55 L 41,50 
+      L 51,50 51,55 A 4,4 0 0 0 59,55 A 4,4 0 1 0 51,55 L 51,50 
+      L 61,50 61,55 A 4,4 0 0 0 69,55 A 4,4 0 1 0 61,55 L 61,50 
+      L 70,50 L 70,60, 0,60
+      L 1,60 1,65 A 4,4 0 0 0 9,65 A 4,4 0 1 0 1,65 L 1,60 
+      L 11,60 11,65 A 4,4 0 0 0 19,65 A 4,4 0 1 0 11,65 L 11,60 
+      L 21,60 21,65 A 4,4 0 0 0 29,65 A 4,4 0 1 0 21,65 L 21,60 
+      L 31,60 31,65 A 4,4 0 0 0 39,65 A 4,4 0 1 0 31,65 L 31,60 
+      L 41,60 41,65 A 4,4 0 0 0 49,65 A 4,4 0 1 0 41,65 L 41,60 
+      L 51,60 51,65 A 4,4 0 0 0 59,65 A 4,4 0 1 0 51,65 L 51,60 
+      L 61,60 61,65 A 4,4 0 0 0 69,65 A 4,4 0 1 0 61,65 L 61,60 
+      L 70,60 70,70, 0,70 0,70 0,0
+      Z"/>
+      <circle cy="15" cx="5" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="15" cx="15" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="15" cx="25" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="15" cx="35" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="15" cx="45" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="15" cx="55" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="15" cx="65" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="25" cx="5" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="25" cx="15" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="25" cx="25" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="25" cx="35" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="25" cx="45" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="25" cx="55" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="25" cx="65" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="35" cx="5" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="35" cx="15" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="35" cx="25" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="35" cx="35" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="35" cx="45" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="35" cx="55" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="35" cx="65" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="45" cx="5" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="45" cx="15" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="45" cx="25" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="45" cx="35" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="45" cx="45" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="45" cx="55" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="45" cx="65" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="55" cx="5" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="55" cx="15" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="55" cx="25" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="55" cx="35" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="55" cx="45" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="55" cx="55" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="55" cx="65" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="65" cx="5" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="65" cx="15" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="65" cx="25" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="65" cx="35" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="65" cx="45" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="65" cx="55" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+      <circle cy="65" cx="65" r="4" fill="none" stroke="black" stroke-width="0.5"/>
+    </svg>
+  </body>
+</html>

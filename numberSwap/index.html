@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <title>Number Puzzle</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" />
+        <!-- Font Awesome -->
+        <script src="https://kit.fontawesome.com/d550ee8263.js" crossorigin></script>
+        <!-- Import Namespace -->
+        <script src="../../../gizmo-atheneum/structure/importnamespace/script.js"></script>
+        <!-- React -->
+        <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+        <!-- local styles -->
+        <link rel="stylesheet" href="styles.css"/>
+
+        <!-- local namespaces -->
+        <script type="text/babel" src="numberSwap.js"></script>
+
+        <!-- init script -->
+        <script type="text/babel">
+            (function(){
+                const NumberSwap = importNamespace("numberSwap.NumberSwap");
+                ReactDOM.createRoot(document.getElementById("app-root")).render(<NumberSwap/>);
+            })()
+        </script>
+    </head>
+    <body class="container-fluid bg-dark text-light">
+        <div id="app-root"></div>
+    </body>
+</html>

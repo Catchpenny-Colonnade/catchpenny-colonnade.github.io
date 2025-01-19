@@ -1,0 +1,17 @@
+/* portrait */
+@media screen and (orientation:portrait) {
+	/* portrait-specific styles */
+  .board-cell {
+    width: 100%!important;
+    height: 50%!important;
+  }
+}
+
+/* landscape */
+@media screen and (orientation:landscape) {
+	/* landscape-specific styles */
+  .board-cell {
+    width: 50%!important;
+    height: 100%!important;
+  }
+}

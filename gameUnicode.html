@@ -1,0 +1,210 @@
+<html>
+  <head>
+    <style>
+      body {
+        background-color: green;
+      }
+      body, div, span, p {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      div span {
+        font-size: 2em;
+      }
+      .spade:after {
+        content: "\002660";
+      }
+      .club:after {
+        content: "\002663";
+      }
+      .heart:after {
+        content: "\002665";
+      }
+      .diamond:after {
+        content: "\002666";
+      }
+      .heart, .diamond {
+        color: red;
+      }
+      .card {
+        margin: 4px;
+        padding: 4px;
+        font-size: 2rem;
+        width: 4rem;
+        text-align: center;
+        vertical-align: middle;
+        background-color: white;
+        border-radius: 4px;
+        display: inline-block;
+      }
+    </style>
+    <style>
+      .die {
+        background-color: white;
+        margin: 0;
+        padding: 0;
+      }
+      .white-on-black .die {
+        background-color: black;
+        color: white;
+      }
+      .white-on-red .die {
+        background-color: red;
+        color: white;
+      }
+      .black-on-white .die {
+        background-color: white;
+        color: black;
+      }
+    </style>
+    <style>
+      .even .white.king:after, .odd .black.king:after {
+        content: "\002654";
+      }
+      .even .white.queen:after, .odd .black.queen:after {
+        content: "\002655";
+      }
+      .even .white.rook:after, .odd .black.rook:after {
+        content: "\002656";
+      }
+      .even .white.bishop:after, .odd .black.bishop:after {
+        content: "\002657";
+      }
+      .even .white.knight:after, .odd .black.knight:after {
+        content: "\002658";
+      }
+      .even .white.pawn:after, .odd .black.pawn:after {
+        content: "\002659";
+      }
+      .even .black.king:after, .odd .white.king:after {
+        content: "\00265A";
+      }
+      .even .black.queen:after, .odd .white.queen:after {
+        content: "\00265B";
+      }
+      .even .black.rook:after, .odd .white.rook:after {
+        content: "\00265C";
+      }
+      .even .black.bishop:after, .odd .white.bishop:after {
+        content: "\00265D";
+      }
+      .even .black.knight:after, .odd .white.knight:after {
+        content: "\00265E";
+      }
+      .even .black.pawn:after, .odd .white.pawn:after {
+        content: "\00265F";
+      }
+      table, td {
+        margin: 0px;
+        padding: 0px;
+      }
+      button.space {
+        width: 3rem;
+        height: 3rem;
+        margin: 0px;
+        padding: 0px;
+        border: 0;
+      }
+      button.even {
+        background-color: white;
+        color: black;
+      }
+      button.odd {
+        background-color: black;
+        color: white;
+      }
+      .die.one:after {
+        content: "\002680"
+      }
+      .die.two:after {
+        content: "\002681"
+      }
+      .die.three:after {
+        content: "\002682"
+      }
+      .die.four:after {
+        content: "\002683"
+      }
+      .die.five:after {
+        content: "\002684"
+      }
+      .die.six:after {
+        content: "\002685"
+      }
+    </style>
+    <script>
+      const chessSet = [
+        "white king",
+        "white queen",
+        "white rook",
+        "white bishop",
+        "white knight",
+        "white pawn",
+        "black king",
+        "black queen",
+        "black rook",
+        "black bishop",
+        "black knight",
+        "black pawn",
+      ];
+      const boardInit = [
+        [8,10,9,7,6,9,10,8],
+        [11,11,11,11,11,11,11,11],
+        [-1,-1,-1,-1,-1,-1,-1,-1],
+        [-1,-1,-1,-1,-1,-1,-1,-1],
+        [-1,-1,-1,-1,-1,-1,-1,-1],
+        [-1,-1,-1,-1,-1,-1,-1,-1],
+        [5,5,5,5,5,5,5,5],
+        [2,4,3,1,0,3,4,2],
+      ];
+      const ranks = [ "A","1","2","3","4","5","6","7","8","9","10","J","Q","K"];
+      const suits = ["spade", "club", "heart", "diamond"];
+      const dieSides = ["one","two","three", "four", "five", "six"];
+      const diceColors = ["black-on-white","white-on-black","white-on-red"]
+      function wrapTable(body) {
+        return `<table><tbody>${body}</tbody></table>`;
+      }
+      function wrapRow(row, rowClass) {
+        return `<tr${rowClass?(' class="'+rowClass+'"'):''}>${row}</tr>`;
+      }
+      function wrapCell(cell, cellClass) {
+        return `<td${cellClass?(' class="'+cellClass+'"'):''}>${cell}</td>`;
+      }
+      function wrapButton(button, buttonClass) {
+        return `<button${buttonClass?(' class="'+buttonClass+'"'):''}>${button}</button>`;
+      }
+      function wrapSpan(span, spanClass) {
+        return `<span${spanClass?(' class="'+spanClass+'"'):''}>${span}</span>`;
+      }
+      function loadTables(chessboardId, deckId, diceSetsId) {
+        document.getElementById(chessboardId).innerHTML = wrapTable(boardInit.map((row,rowIndex) => {
+          return wrapRow(row.map((cell,cellIndex) => {
+            const pieceClass = chessSet[cell];
+            const piece = (pieceClass && wrapSpan("",pieceClass)) || "";
+            const spaceClass = "space " + (((rowIndex + cellIndex)%2 === 0)?"even":"odd");
+            const button = wrapButton(piece, spaceClass);
+            console.log({ rowIndex, cellIndex, cell, pieceClass, piece, spaceClass, button });
+            return wrapCell(button);
+          }).join(""));
+        }).join(""));
+        document.getElementById(deckId).innerHTML = wrapTable(ranks.map((rank) => {
+          return wrapRow(suits.map((suit) => {
+            return wrapCell(wrapSpan(rank,"card " + suit));
+          }).join(""));
+        }).join(""));
+        document.getElementById(diceSetsId).innerHTML = wrapTable(diceColors.map((diceColor) => {
+          return wrapRow(dieSides.map((dieSide) => {
+            return wrapCell(wrapSpan("","die " + dieSide));
+          }).join(""), diceColor);
+        }).join(""))
+      }
+    </script>
+  </head>
+  <body onload="loadTables('chessboard','deck','diceSets')">
+    <div id="chessboard">
+    </div>
+    <div id="deck">
+    </div>
+    <div id="diceSets">
+    </div>
+  </body>
+</html>

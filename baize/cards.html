@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <title>Decked Out!</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="cards/cardData.js"></script>
+        <script src="util/jSpec.js"></script>
+        <script src="util/jHiccup.js"></script>
+        <script src="util/templateer.js"></script>
+        <script src="decked-out.js"></script>
+        <script src="solitaire.js"></script>
+        <script src="solitaire-canvas.js"></script>
+        <script type="text/javascript">
+            function init(defsId,displayId) {
+                let deck = new DeckedOut(Deck.getSVGSchematic());
+                document.getElementById(defsId).innerHTML = deck.getDefs();
+                SolitaireCanvas.init(displayId,deck);
+            }
+        </script>
+        <style>
+            body {
+                background-color: #35654d;
+            }
+            .from, .from .cardFace:hover {
+                fill: blue;
+                stroke: blue;
+            }
+            .cardFace:hover, .cardBack:hover {
+                fill: yellow;
+                stroke: yellow;
+            }
+            .ghostCard:hover, .emptyPile:hover {
+                stroke: yellow;
+                stroke-width: 4px;
+            }
+        </style>
+    </head>
+    <body onload="init('deckDefs','deckDisplay')">
+        <span id="deckDefs"></span>
+        <div id="deckDisplay"></div>
+    </body>
+</html>

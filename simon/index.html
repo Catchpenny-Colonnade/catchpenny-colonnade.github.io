@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <title>Simon</title>
+        <script type="text/javascript" src="./hertz.js"></script>
+        <script type="text/javascript" src="./beeper.js"></script>
+        <script type="text/javascript" src="./timeouter.js"></script>
+        <script type="text/javascript" src="./game.js"></script>
+        <style type="text/css">
+            body {
+                background-color: black;
+            }
+            #green.active {
+                fill: lightgreen;
+            }
+            #red.active {
+                fill: #ffcccb;
+            }
+            #yellow.active {
+                fill: lightyellow;
+            }
+            #blue.active {
+                fill: lightblue;
+            }
+        </style>
+    </head>
+    <body onload="init()">
+        <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
+            <a id="bgLink" href="#" onclick="event.preventDefault()">
+                <rect id="bg" width="100" height="100" fill="black"/>
+            </a>
+            <a id="greenLink" href="#" onclick="event.preventDefault()">
+                <rect id="green" x="2" y="2" width="47" height="47" fill="green"/>
+            </a>
+            <a id="redLink" href="#" onclick="event.preventDefault()">
+                <rect id="red" x="51" y="2" width="47" height="47" fill="red"/>
+            </a>
+            <a id="yellowLink" href="#" onclick="event.preventDefault()">
+                <rect id="yellow" x="2" y="51" width="47" height="47" fill="yellow"/>
+            </a>
+            <a id="blueLink" href="#" onclick="event.preventDefault()">
+                <rect id="blue" x="51" y="51" width="47" height="47" fill="blue"/>
+            </a>
+        </svg>
+    </body>
+</html>
