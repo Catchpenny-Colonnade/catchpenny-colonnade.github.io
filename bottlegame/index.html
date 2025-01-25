@@ -21,6 +21,7 @@
         <!-- init script -->
         <script type="text/babel">
             (function(){
+                window.onbeforeunload = () => "Are you sure you want to leave your game?";
                 const BottleGame = importNamespace("bottles.BottleGame"); // bottles.js
                 ReactDOM.createRoot(document.getElementById("app-root")).render(<BottleGame level={(new URL(location)).searchParams.get("level")}/>);
             })()
