@@ -2,6 +2,8 @@ namespace("sudoku.Sudoku", {
   "gizmo-atheneum.namespaces.Ajax":"Ajax",
   "sudoku.NumberIcons": "NumberIcons"
 }, ({ Ajax, NumberIcons }) => {
+  const lineWidth = 25;
+  const blockLineWidth = 50;
   const getCoordKey = (r,c) => {
     if (!isNaN(r) && !isNaN(c)) {
       return `${r}X${c}`;
@@ -104,14 +106,13 @@ namespace("sudoku.Sudoku", {
       });
       if (this.state.history) {
         this.state.history.forEach(({ row, col, value }) => {
-          const coordKey = getCoordKey(r,c);
+          const coordKey = getCoordKey(row, col);
           if (!this.state.original[coordKey]) {
-            grid[row][col] = {
-              value
-            }
+            grid[row][col] = { value };
           }
         });
       }
+      console.log({ grid });
       Array(9).fill("").forEach((_,i) => {
         const rowValues = grid[i].reduce((acc, value) => {
           const key = value.value?.toString()
@@ -124,7 +125,7 @@ namespace("sudoku.Sudoku", {
           }
           return acc;
         }, {});
-        const colValues = grid.map((acc, r) => {
+        const colValues = grid.reduce((acc, r) => {
           const value = r[i];
           const key = value.value?.toString()
           if (key) {
@@ -151,9 +152,11 @@ namespace("sudoku.Sudoku", {
             }
           }
           return acc;
-        }, acc);
+        }, {});
         [rowValues, colValues, blockValues].forEach(valuesMap => Object.values(valuesMap).filter(valuesList => valuesList.length > 1).forEach(valuesList => valuesList.forEach(value => {
-          value.error = true;
+          if (!value.isOriginal) {
+            value.error = true;
+          }
         })));
       });
       const complete = grid.flat().filter(v => !v.value || v.error).length === 0;
@@ -189,26 +192,21 @@ namespace("sudoku.Sudoku", {
               <rect x="3650" y="0" width="50" height="5500" fill="white" stroke="none"/>
               <rect x="0" y="1800" width="5500" height="50" fill="white" stroke="none"/>
               <rect x="0" y="3650" width="5500" height="50" fill="white" stroke="none"/>
-              {Array(9).fill("").map((_, row) => (<>{
-                  Array(9).fill("").map((_, col) => {
-                    const lineWidth = 25;
-                    const blockLineWidth = 50;
-                    const $$ = this.getValue(row, col);
-                    const blockRow = Math.floor(row/3);
-                    const blockCol = Math.floor(col/3);
-                    const x = 600 * col + blockCol * blockLineWidth;
-                    const y = 600 * row + blockRow * blockLineWidth;
-                    const letterColor = ($$ && $$.isOriginal?"lightgrey":"white");
-                    const letterBold = ($$ && $$.isOriginal?"40":"0");
-                    return <a href="#" key={getCoordKey(row,col)} onClick={(e) => {
-                      e.preventDefault();
-                      this.selectLoc(row,col);
-                    }}>
-                      <rect x={x} y={y} width="600" height="600" fill="black" stroke="white" strokeWidth={lineWidth}/>
-                      { $$ && <use href={`#solid.${$$.value}`} x={x + 300} y={y + 300} fill={letterColor} stroke={letterColor} strokeWidth={letterBold}/> }
-                    </a>;
-                  })
-                }</>))}
+              { grid.map((row,r) => row.map(($$,c) => {
+                const blockRow = Math.floor(r/3);
+                const blockCol = Math.floor(c/3);
+                const x = 600 * c + blockCol * blockLineWidth;
+                const y = 600 * r + blockRow * blockLineWidth;
+                const letterColor = ($$.isOriginal?"lightgrey":($$.error?"red":"white"));
+                const letterBold = ($$.isOriginal?"40":"0");
+                return <a href="#" key={getCoordKey(r,c)} onClick={(e) => {
+                  e.preventDefault();
+                  this.selectLoc(r,c);
+                }}>
+                  <rect x={x} y={y} width="600" height="600" fill="black" stroke="white" strokeWidth={lineWidth}/>
+                  { $$.value && <use href={`#solid.${$$.value}`} x={x + 300} y={y + 300} fill={letterColor} stroke={letterColor} strokeWidth={letterBold}/> }
+                </a>;
+              }))}
             </svg>
           </div>
         </>}
