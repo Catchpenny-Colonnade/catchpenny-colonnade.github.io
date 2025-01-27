@@ -53,7 +53,6 @@ namespace("sudoku.Sudoku", {
         const coordKey = getCoordKey(row, col);
         const checks = {
           hasCoordKey: (coordKey?true:false),
-          hasValueToSet: (valueToSet?true:false),
           isNotLocked: (this.state.original[coordKey]?false:true)
         }
         if (Object.values(checks).reduce((a,b) => a && b, true)) {
@@ -62,8 +61,14 @@ namespace("sudoku.Sudoku", {
       }
       this.setState(updates);
     }
-    selectLoc(row, col) {
-      this.applyValue( { row, col }, this.state.value );
+    selectLoc(row, col, { value, isOriginal }, valueCompleted) {
+      if (isOriginal) {
+        this.applyValue( { }, value );
+      } else if (valueCompleted) {
+        this.applyValue( { row, col }, undefined );
+      } else {
+        this.applyValue( { row, col }, this.state.value );
+      }
     }
     isSelectedLoc(row, col) {
       return row === this.state.loc?.row && col === this.state.loc?.col;
@@ -81,8 +86,12 @@ namespace("sudoku.Sudoku", {
         }
       }
     }
-    selectValue(value) {
-      this.applyValue(this.state.loc, value);
+    selectValue(value, previousCompleted) {
+      if (previousCompleted) {
+        this.applyValue({}, value);
+      } else {
+        this.applyValue(this.state.loc, value);
+      }
     }
     isSelectedValue(value) {
       return value = this.state.value;
@@ -112,7 +121,6 @@ namespace("sudoku.Sudoku", {
           }
         });
       }
-      console.log({ grid });
       Array(9).fill("").forEach((_,i) => {
         const rowValues = grid[i].reduce((acc, value) => {
           const key = value.value?.toString()
@@ -159,7 +167,16 @@ namespace("sudoku.Sudoku", {
           }
         })));
       });
-      const complete = grid.flat().filter(v => !v.value || v.error).length === 0;
+      const completeByNumber = grid.flat().reduce((acc, { value, error }) => {
+        if (value && !error) {
+          acc[value] = (acc[value] || 0) + 1;
+        }
+        return acc;
+      }, {});
+      const complete = (() => {
+        const counts = Object.values(completeByNumber);
+        return counts.length === 9 && counts.reduce((acc, c) => acc && c === 9, true);
+      })();
       return (<div className="d-flex flex-column">
         <h2 className="text-center mb-2">Sudoku</h2>
         { complete?<>
@@ -172,8 +189,9 @@ namespace("sudoku.Sudoku", {
                 <tr>
                 { Array(9).fill("").map((c,i) => {
                   const value = i + 1;
-                  return <td key={`value${value}`}>
-                    <button className="btn btn-light" onClick={() => this.selectValue(value)}>{value}</button>
+                  const style = (this.state.value === value)?"btn-success":"btn-light";
+                  return (completeByNumber[value] === 9)?<></>:<td key={`value${value}`}>
+                    <button className={`btn ${style}`} onClick={() => this.selectValue(value, completeByNumber[this.state.value] === 9)}>{value}</button>
                   </td>;
                 })}
                   <td>
@@ -201,7 +219,7 @@ namespace("sudoku.Sudoku", {
                 const letterBold = ($$.isOriginal?"40":"0");
                 return <a href="#" key={getCoordKey(r,c)} onClick={(e) => {
                   e.preventDefault();
-                  this.selectLoc(r,c);
+                  this.selectLoc(r,c,$$,completeByNumber[this.state.value] === 9);
                 }}>
                   <rect x={x} y={y} width="600" height="600" fill="black" stroke="white" strokeWidth={lineWidth}/>
                   { $$.value && <use href={`#solid.${$$.value}`} x={x + 300} y={y + 300} fill={letterColor} stroke={letterColor} strokeWidth={letterBold}/> }
