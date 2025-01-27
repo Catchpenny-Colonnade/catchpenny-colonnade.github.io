@@ -152,10 +152,10 @@ namespace("sudoku.Sudoku", {
           }
           return acc;
         }, acc);
+        [rowValues, colValues, blockValues].forEach(valuesMap => Object.values(valuesMap).filter(valuesList => valuesList.length > 1).forEach(valuesList => valuesList.forEach(value => {
+          value.error = true;
+        })));
       });
-      [rowValues, colValues, blockValues].forEach(valuesMap => Object.values(valuesMap).filter(valuesList => valuesList.length > 1).forEach(valuesList => valuesList.forEach(value => {
-        value.error = true;
-      })));
       const complete = grid.flat().filter(v => !v.value || v.error).length === 0;
       return (<div className="d-flex flex-column">
         <h2 className="text-center mb-2">Sudoku</h2>
