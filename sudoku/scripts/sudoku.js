@@ -1,7 +1,12 @@
 namespace("sudoku.Sudoku", {
-  "gizmo-atheneum.namespaces.Ajax":"Ajax"
-}, ({ Ajax }) => {
-  const getCoordKey = (r,c) => `${r}X${c}`;
+  "gizmo-atheneum.namespaces.Ajax":"Ajax",
+  "sudoku.NumberIcons": "NumberIcons"
+}, ({ Ajax, NumberIcons }) => {
+  const getCoordKey = (r,c) => {
+    if (!isNaN(r) && !isNaN(c)) {
+      return `${r}X${c}`;
+    }
+  };
   return class extends React.Component {
     constructor(props) {
       super(props);
@@ -40,10 +45,18 @@ namespace("sudoku.Sudoku", {
     componentDidUpdate(){
       this.afterRender();
     }
-    applyValue({row, col}, value) {
-      const updates = { loc: { row, col }, value };
-      if (row && col && value && this.state.history && this.state.original && !this.state.original[getCoordKey(row, col)] && this.state.history) {
-        updates.history = this.state.history.concat([{ row, col, value }])
+    applyValue({row, col}, valueToSet) {
+      const updates = { loc: { row, col }, value: valueToSet };
+      if (this.state.original) {
+        const coordKey = getCoordKey(row, col);
+        const checks = {
+          hasCoordKey: (coordKey?true:false),
+          hasValueToSet: (valueToSet?true:false),
+          isNotLocked: (this.state.original[coordKey]?false:true)
+        }
+        if (Object.values(checks).reduce((a,b) => a && b, true)) {
+          updates.history = this.state.history.concat([{ row, col, value: valueToSet }])
+        }
       }
       this.setState(updates);
     }
@@ -57,7 +70,14 @@ namespace("sudoku.Sudoku", {
       return this.state.original && this.state.original[getCoordKey(row,col)];
     }
     getValue(r, c) {
-      return (this.state.original && this.state.original[getCoordKey(r,c)]) || (this.state.history && this.state.history.filter(({row,col}) => row === r && col === c).toReversed()[0]?.value);
+      if (this.state.original) {
+        const originalValue = this.state.original[getCoordKey(r,c)];
+        if (originalValue) {
+          return { value: originalValue, isOriginal: true };
+        } else if(this.state.history){
+          return this.state.history.filter(({row,col}) => row === r && col === c).toReversed()[0];
+        }
+      }
     }
     selectValue(value) {
       this.applyValue(this.state.loc, value);
@@ -69,6 +89,8 @@ namespace("sudoku.Sudoku", {
       this.setState({loc:{}, value:undefined})
     }
     render() {
+      // todo - error detection
+      // todo - completion detection
       return (<div className="d-flex flex-column">
         <h2 className="text-center mb-2">Sudoku</h2>
         <div className="d-flex justify-content-center mb-2">
@@ -77,7 +99,7 @@ namespace("sudoku.Sudoku", {
               <tr>
               { Array(9).fill("").map((c,i) => {
                 const value = i + 1;
-                return <td>
+                return <td key={`value${value}`}>
                   <button className="btn btn-light" onClick={() => this.selectValue(value)}>{value}</button>
                 </td>;
               })}
@@ -89,22 +111,35 @@ namespace("sudoku.Sudoku", {
           </table>
         </div>
         <div className="d-flex justify-content-center">
-          <table className="board">
-            <tbody>
-              {Array(9).fill("").map((_, row) => (<tr>{
+          <svg width="80%" height="80%" viewBox="0 0 5500 5500">
+            <defs>
+              { NumberIcons.getDefs() }
+            </defs>
+            <rect x="1800" y="0" width="50" height="5500" fill="white" stroke="none"/>
+            <rect x="3650" y="0" width="50" height="5500" fill="white" stroke="none"/>
+            <rect x="0" y="1800" width="5500" height="50" fill="white" stroke="none"/>
+            <rect x="0" y="3650" width="5500" height="50" fill="white" stroke="none"/>
+            {Array(9).fill("").map((_, row) => (<>{
                 Array(9).fill("").map((_, col) => {
-                  let value = this.getValue(row, col) || "_";
-                  return (<td>
-                    <button className="btn btn-info" disabled={this.isOriginal(row, col)} onClick={() => this.selectLoc(row, col)}>
-                      <span>
-                        { value }
-                      </span>
-                    </button>
-                  </td>);
+                  const lineWidth = 25;
+                  const blockLineWidth = 50;
+                  const $$ = this.getValue(row, col);
+                  const blockRow = Math.floor(row/3);
+                  const blockCol = Math.floor(col/3);
+                  const x = 600 * col + blockCol * blockLineWidth;
+                  const y = 600 * row + blockRow * blockLineWidth;
+                  const letterColor = ($$ && $$.isOriginal?"lightgrey":"white");
+                  const letterBold = ($$ && $$.isOriginal?"40":"0");
+                  return <a href="#" key={getCoordKey(row,col)} onClick={(e) => {
+                    e.preventDefault();
+                    this.selectLoc(row,col);
+                  }}>
+                    <rect x={x} y={y} width="600" height="600" fill="black" stroke="white" strokeWidth={lineWidth}/>
+                    { $$ && <use href={`#solid.${$$.value}`} x={x + 300} y={y + 300} fill={letterColor} stroke={letterColor} strokeWidth={letterBold}/> }
+                  </a>;
                 })
-              }</tr>))}
-            </tbody>
-          </table>
+              }</>))}
+          </svg>
         </div>
       </div>);
     }
