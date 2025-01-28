@@ -2,8 +2,15 @@ namespace("sudoku.Sudoku", {
   "gizmo-atheneum.namespaces.Ajax":"Ajax",
   "sudoku.NumberIcons": "NumberIcons"
 }, ({ Ajax, NumberIcons }) => {
-  const lineWidth = 25;
-  const blockLineWidth = 50;
+  const frameConfig = {
+    lineWidth: 50,
+    blockLineWidth: 50,
+    cellSize: 600,
+  };
+  frameConfig.lineGap = frameConfig.lineWidth / 2;
+  frameConfig.blockSize = 3 * frameConfig.cellSize + frameConfig.lineWidth;
+  frameConfig.twoThirds = frameConfig.blockLineWidth + 2 * frameConfig.blockSize;
+  frameConfig.fullSize = 2 * frameConfig.blockLineWidth + 3 * frameConfig.blockSize;
   const getCoordKey = (r,c) => {
     if (!isNaN(r) && !isNaN(c)) {
       return `${r}X${c}`;
@@ -113,13 +120,13 @@ namespace("sudoku.Sudoku", {
     }
     getActiveFrame() {
       const { x, y } = this.getXY(this.state.loc.row, this.state.loc.col);
-      return <rect x={x} y={y} width="600" height="600" fill="none" stroke="green" strokeWidth={lineWidth*3}/>
+      return <rect x={x} y={y} width="600" height="600" fill="none" stroke="green" strokeWidth={frameConfig.lineWidth*3}/>
     }
     getXY(r,c) {
       const blockRow = Math.floor(r/3);
       const blockCol = Math.floor(c/3);
-      const x = 600 * c + blockCol * blockLineWidth;
-      const y = 600 * r + blockRow * blockLineWidth;
+      const x = frameConfig.cellSize * c + blockCol * (frameConfig.blockLineWidth + frameConfig.lineWidth) + frameConfig.lineGap;
+      const y = frameConfig.cellSize * r + blockRow * (frameConfig.blockLineWidth + frameConfig.lineWidth) + frameConfig.lineGap;
       return { x, y };
     }
     render() {
@@ -228,14 +235,10 @@ namespace("sudoku.Sudoku", {
             </table>
           </div>
           <div className="d-flex justify-content-center">
-            <svg width="80%" height="80%" viewBox="0 0 5500 5500">
+            <svg width="80%" height="80%" viewBox={`0 0 ${frameConfig.fullSize} ${frameConfig.fullSize}`}>
               <defs>
                 { NumberIcons.getDefs() }
               </defs>
-              <rect x="1800" y="0" width="50" height="5500" fill="white" stroke="none"/>
-              <rect x="3650" y="0" width="50" height="5500" fill="white" stroke="none"/>
-              <rect x="0" y="1800" width="5500" height="50" fill="white" stroke="none"/>
-              <rect x="0" y="3650" width="5500" height="50" fill="white" stroke="none"/>
               { grid.map((row,r) => row.map(($$,c) => {
                 const { x, y } = this.getXY(r,c);
                 const letterColor = (($$.error?"red":($$.value === this.state.value)?"green":($$.isOriginal?"lightgrey":("white"))));
@@ -245,10 +248,14 @@ namespace("sudoku.Sudoku", {
                   e.preventDefault();
                   this.selectLoc(r,c,$$,completeByNumber[this.state.value] === 9);
                 }}>
-                  <rect x={x} y={y} width="600" height="600" fill={bgColor} stroke="white" strokeWidth={lineWidth}/>
-                  { $$.value && <use href={`#solid.${$$.value}`} x={x + 300} y={y + 300} fill={letterColor} stroke={letterColor} strokeWidth={letterBold}/> }
+                  <rect x={x} y={y} width={frameConfig.cellSize} height={frameConfig.cellSize} fill={bgColor} stroke="white" strokeWidth={frameConfig.lineWidth}/>
+                  { $$.value && <use href={`#solid.${$$.value}`} x={x + (frameConfig.cellSize/2)} y={y + (frameConfig.cellSize/2)} fill={letterColor} stroke={letterColor} strokeWidth={letterBold}/> }
                 </a>;
               }))}
+              <rect x={frameConfig.blockSize} y="0" width={frameConfig.blockLineWidth} height={frameConfig.fullSize} fill="white" stroke="none"/>
+              <rect x={frameConfig.twoThirds} y="0" width={frameConfig.blockLineWidth} height={frameConfig.fullSize} fill="white" stroke="none"/>
+              <rect x="0" y={frameConfig.blockSize} width={frameConfig.fullSize} height={frameConfig.blockLineWidth} fill="white" stroke="none"/>
+              <rect x="0" y={frameConfig.twoThirds} width={frameConfig.fullSize} height={frameConfig.blockLineWidth} fill="white" stroke="none"/>
               { this.hasSelectedLoc() && this.getActiveFrame() }
             </svg>
           </div>
