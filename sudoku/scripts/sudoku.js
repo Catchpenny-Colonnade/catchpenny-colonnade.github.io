@@ -62,7 +62,7 @@ namespace("sudoku.Sudoku", {
       this.setState(updates);
     }
     selectLoc(row, col, { value, isOriginal }, valueCompleted) {
-      if (isOriginal) {
+      if (isOriginal || this.isSelectedLoc(row, col)) {
         this.applyValue( { }, value );
       } else if (valueCompleted) {
         this.applyValue( { row, col }, undefined );
@@ -72,6 +72,9 @@ namespace("sudoku.Sudoku", {
     }
     isSelectedLoc(row, col) {
       return row === this.state.loc?.row && col === this.state.loc?.col;
+    }
+    hasSelectedLoc() {
+      return !isNaN(this.state.loc.row) && !isNaN(this.state.loc.col);
     }
     isOriginal(row, col) {
       return this.state.original && this.state.original[getCoordKey(row,col)];
@@ -86,9 +89,18 @@ namespace("sudoku.Sudoku", {
         }
       }
     }
+    goBack() {
+      if (Array.isArray(this.state.history) && this.state.history.length > 0) {
+        const history = Array.from(this.state.history);
+        history.pop();
+        this.setState({ histor, loc: {}, value: undefined });
+      }
+    }
     selectValue(value, previousCompleted) {
       if (previousCompleted) {
         this.applyValue({}, value);
+      } else if (this.state.value === value) {
+        this.clearSelection();
       } else {
         this.applyValue(this.state.loc, value);
       }
@@ -98,6 +110,17 @@ namespace("sudoku.Sudoku", {
     }
     clearSelection() {
       this.setState({loc:{}, value:undefined})
+    }
+    getActiveFrame() {
+      const { x, y } = this.getXY(this.state.loc.row, this.state.loc.col);
+      return <rect x={x} y={y} width="600" height="600" fill="none" stroke="green" strokeWidth={lineWidth*3}/>
+    }
+    getXY(r,c) {
+      const blockRow = Math.floor(r/3);
+      const blockCol = Math.floor(c/3);
+      const x = 600 * c + blockCol * blockLineWidth;
+      const y = 600 * r + blockRow * blockLineWidth;
+      return { x, y };
     }
     render() {
       const grid = Array(9).fill("").map((_,r) => {
@@ -187,6 +210,9 @@ namespace("sudoku.Sudoku", {
             <table>
               <tbody>
                 <tr>
+                  <td>
+                    <button className="btn btn-warning" onClick={() => this.goBack()}>&lt;</button>
+                  </td>
                 { Array(9).fill("").map((c,i) => {
                   const value = i + 1;
                   const style = (this.state.value === value)?"btn-success":"btn-light";
@@ -211,20 +237,19 @@ namespace("sudoku.Sudoku", {
               <rect x="0" y="1800" width="5500" height="50" fill="white" stroke="none"/>
               <rect x="0" y="3650" width="5500" height="50" fill="white" stroke="none"/>
               { grid.map((row,r) => row.map(($$,c) => {
-                const blockRow = Math.floor(r/3);
-                const blockCol = Math.floor(c/3);
-                const x = 600 * c + blockCol * blockLineWidth;
-                const y = 600 * r + blockRow * blockLineWidth;
-                const letterColor = ($$.isOriginal?"lightgrey":($$.error?"red":"white"));
+                const { x, y } = this.getXY(r,c);
+                const letterColor = (($$.error?"red":($$.value === this.state.value)?"green":($$.isOriginal?"lightgrey":("white"))));
+                const bgColor = ($$.isOriginal?"navy":"black")
                 const letterBold = ($$.isOriginal?"40":"0");
                 return <a href="#" key={getCoordKey(r,c)} onClick={(e) => {
                   e.preventDefault();
                   this.selectLoc(r,c,$$,completeByNumber[this.state.value] === 9);
                 }}>
-                  <rect x={x} y={y} width="600" height="600" fill="black" stroke="white" strokeWidth={lineWidth}/>
+                  <rect x={x} y={y} width="600" height="600" fill={bgColor} stroke="white" strokeWidth={lineWidth}/>
                   { $$.value && <use href={`#solid.${$$.value}`} x={x + 300} y={y + 300} fill={letterColor} stroke={letterColor} strokeWidth={letterBold}/> }
                 </a>;
               }))}
+              { this.hasSelectedLoc() && this.getActiveFrame() }
             </svg>
           </div>
         </>}
