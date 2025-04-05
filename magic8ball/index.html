@@ -1,0 +1,46 @@
+<html>
+    <head>
+        <title>Magic 8 Ball</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body {
+            background-color: black;
+            color: white;
+          }
+          h2 {
+            text-align: center;
+          }
+        </style>
+        <script type="text/JavaScript">
+     const options = ["It is certain",
+     "It is decidedly so",
+     "Without a doubt",
+     "Yes definitely",
+     "You may rely on it",
+     "As I see it, yes",
+     "Most likely",
+     "Outlook good",
+     "Yes",
+     "Signs point to yes",
+     "Reply hazy, try again",
+     "Ask again later",
+     "Better not tell you now",
+     "Cannot predict now",
+     "Concentrate and ask again",
+     "Don't count on it",
+     "My reply is no",
+     "My sources say no",
+     "Outlook not so good",
+     "Very doubtful"];
+          function onInit(){
+            document.getElementById("output").innerHTML = options[Math.floor(options.length * Math.random())];
+          }
+        </script>
+    </head>
+    <body onload="onInit()">
+      <h2></h2>
+      <div>
+        <span id="output"></span>
+      </div>
+    </body>
+</html>
