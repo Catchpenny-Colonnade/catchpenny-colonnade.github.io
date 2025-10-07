@@ -36,9 +36,25 @@
         "black": "red",
         "red": "black"
       };
+      function buildTable(tableId) {
+        var contents = [];
+        for(var i = 0; i < suits.length; i++) {
+          for (var j = 0; j < ranks.length; j++) {
+            var x = i * 15;
+            var y = j * 15;
+            contents.push(`<use href="#tile" x="${x}" y="${y}"/>`)
+            var suit = suits[i];
+            contents.push(`<use href="#${suit}" x="${x}" y="${y}"/>`);
+            var rank = ranks[j];
+            var rankColor = oppositeColors[suitColors[suit]];
+            contents.push(`<use href="#${rank}" x="${x}" y="${y}" fill="${rankColor}"/>`);
+          }
+        }
+        document.getElementById(tableId).innerHTML = "<svg width=\"100%\" height=\"100%\" viewbox=\"0 0 60 135\">" + contents.join("") + "</svg>";
+      }
     </script>
   </head>
-  <body class="container bg-dark text-light">
+  <body onload="buildTable('svgTable')" class="container bg-dark text-light">
     <svg width="0" height="0">
       <defs>
         <text id="C" x="1" y="14.25" font-size="19">&#x2663;</text>
@@ -62,92 +78,9 @@
       </defs>
     </svg>
     <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#C"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#D"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#H"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#S"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#A"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#J"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#Q"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#K"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#2"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#3"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#4"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#5"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#6"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#7"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#8"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#9"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#10"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#C"/>
-      <use href="#A" fill="red"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#H"/>
-      <use href="#10"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#S"/>
-      <use href="#K" fill="red"/>
-    </svg>
-    <svg width="20%" height="20%" viewbox="0 0 15 15">
-      <use href="#tile"/>
-      <use href="#D"/>
-      <use href="#4" fill="black"/>
+      <use href="#tile" x="0" y="0"/>
+      <use href="#D" x="0" y="0"/>
+      <use href="#4" x="0" y="0" fill="black"/>
     </svg>
     <div id="svgTable"></div>
   </body>
