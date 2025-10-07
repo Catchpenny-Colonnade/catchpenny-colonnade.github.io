@@ -88,7 +88,10 @@
                 "fill":"none","stroke":"${$args.suitColor}","stroke-width":1.5,"stroke-dasharray": 2
               }],
               [ "use", {
-                "xlink:href":"#suit${$args.suit}","transform":"translate(14.5,26.5) scale(3.5)","fill":"none","stroke":"${$args.suitColor}","stroke-width":0.75,"stroke-dasharray": 0.25
+                "xlink:href":"#suit${$args.suit}",
+                "transform":"translate(14.5,26.5) scale(3.5)",
+                "fill":"none","stroke":"${$args.suitColor}",
+                "stroke-width":0.75,"stroke-dasharray": 0.25
               }]
             ]
           },
@@ -99,7 +102,8 @@
               { "id": "emptyPile"},
               [ "rect", { "x":1.5, "y":1.5, "width":54, "height":85, "fill": "#35654d" }],
               [ "path", {
-                "d": "M 2 0 h 53 l 2 2 v 84 l -2 2 h -53 l -2 -2 v -84 z m 0 2 v 84 h 53 v -84 z","fill":"none","stroke":"lightgrey","stroke-width":1.5,"stroke-dasharray": 2
+                "d": "M 2 0 h 53 l 2 2 v 84 l -2 2 h -53 l -2 -2 v -84 z m 0 2 v 84 h 53 v -84 z",
+                "fill":"none","stroke":"lightgrey","stroke-width":1.5,"stroke-dasharray": 2
               }]
             ]
           },
