@@ -36,25 +36,41 @@
         "black": "red",
         "red": "black"
       };
-      function buildTable(tableId) {
-        var contents = [];
+      function buildTable(defsId, tableId, deckId) {
+        var defs = [];
+        var table = [];
+        var deck = [];
         for(var i = 0; i < suits.length; i++) {
           for (var j = 0; j < ranks.length; j++) {
-            var x = i * 15;
-            var y = j * 15;
-            contents.push(`<use href="#tile" x="${x}" y="${y}"/>`)
+            var tableX = i * 15;
+            var tableY = j * 15;
+            var deckX = i * 110;
+            var deckY = j * 165;
             var suit = suits[i];
-            contents.push(`<use href="#${suit}" x="${x}" y="${y}"/>`);
             var rank = ranks[j];
             var rankColor = oppositeColors[suitColors[suit]];
-            contents.push(`<use href="#${rank}" x="${x}" y="${y}" fill="${rankColor}"/>`);
+            table.push(`<use href="#tile" x="${tableX}" y="${tableY}"/>`)
+            table.push(`<use href="#${rank}${suit}" x="${tableX}" y="${tableY}"/>`)
+            defs.push(`<g id="${rank}${suit}">`);
+            defs.push(`<use href="#${suit}"/>`);
+            defs.push(`<use href="#${rank}" fill="${rankColor}"/>`);
+            defs.push(`</g>`);
+            defs.push(`<g id="card-${rank}${suit}">`);
+            defs.push(`<use href="#cardback"/>`);
+            defs.push(`<use href="#${rank}${suit}" x="5" y="5"/>`);
+            defs.push(`<use href="#${rank}${suit}" x="6.25" y="12.5" transform="scale(4)"/>`);
+            defs.push(`<use href="#${rank}${suit}" x="5" y="5" transform="rotate(180,55,82.5)"/>`);
+            defs.push(`</g>`);
+            deck.push(`<use href="#card-${rank}${suit}" x="${deckX}" y="${deckY}"/>`)
           }
         }
-        document.getElementById(tableId).innerHTML = "<svg width=\"100%\" height=\"100%\" viewbox=\"0 0 60 195\">" + contents.join("") + "</svg>";
+        document.getElementById(defsId).innerHTML = "<svg width=\"0\" height=\"0\">" + defs.join("") + "</svg>";
+        document.getElementById(tableId).innerHTML = "<svg width=\"100%\" height=\"100%\" viewbox=\"0 0 60 195\">" + table.join("") + "</svg>";
+        document.getElementById(deckId).innerHTML = "<svg width=\"100%\" height=\"100%\" viewbox=\"0 0 440 2145\">" + deck.join("") + "</svg>";
       }
     </script>
   </head>
-  <body onload="buildTable('svgTable')" class="container bg-dark text-light">
+  <body onload="buildTable('defs2','svgTable','deck')" class="container bg-dark text-light">
     <svg width="0" height="0">
       <defs>
         <text id="C" x="1" y="14.25" font-size="19">&#x2663;</text>
@@ -75,8 +91,11 @@
         <text id="9" x="2.5" y="13.5" font-size="17">9</text>
         <text id="10" x="1" y="11" font-size="11">10</text>
         <rect id="tile" x="0" y="0" width="15" height="15" stroke="black" fill="white"/>
+        <rect id="cardback" x="0" y="0" rx="10" ry="10" width="110" height="165" stroke="black" fill="white"/>
       </defs>
     </svg>
+    <div id="defs2"></div>
     <div id="svgTable"></div>
+    <div id="deck"></div>
   </body>
 </html>
