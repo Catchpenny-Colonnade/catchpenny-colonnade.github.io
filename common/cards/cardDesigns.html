@@ -44,8 +44,8 @@
           for (var j = 0; j < ranks.length; j++) {
             var tableX = i * 15;
             var tableY = j * 15;
-            var deckX = i * 110;
-            var deckY = j * 165;
+            var deckX = i * 95;
+            var deckY = j * 142.5;
             var suit = suits[i];
             var rank = ranks[j];
             var rankColor = oppositeColors[suitColors[suit]];
@@ -57,9 +57,9 @@
             defs.push(`</g>`);
             defs.push(`<g id="card-${rank}${suit}">`);
             defs.push(`<use href="#cardback"/>`);
-            defs.push(`<use href="#${rank}${suit}" x="5" y="5"/>`);
-            defs.push(`<use href="#${rank}${suit}" x="6.25" y="12.5" transform="scale(4)"/>`);
-            defs.push(`<use href="#${rank}${suit}" x="5" y="5" transform="rotate(180,55,82.5)"/>`);
+            defs.push(`<use href="#${rank}${suit}" x="3" y="4" transform="scale(1.5)"/>`);
+            defs.push(`<use href="#${rank}${suit}" x="2.25" y="7.5" transform="scale(4.75)"/>`);
+            defs.push(`<use href="#${rank}${suit}" x="3" y="4" transform="rotate(180,47.5,71.25),scale(1.5)"/>`);
             defs.push(`</g>`);
             deck.push(`<use href="#card-${rank}${suit}" x="${deckX}" y="${deckY}"/>`)
           }
