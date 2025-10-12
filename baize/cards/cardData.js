@@ -73,8 +73,7 @@
             "$xml": [
               'g',
               { 'id': "cardFrame" },
-              [ "rect", { "x": 1.5, "y": 1.5, "width": 54, "height": 85, "fill": "#fff" } ],
-              [ "path", { "d": "M 2 0 h 53 l 2 2 v 84 l -2 2 h -53 l -2 -2 v -84 z m 0 2 v 84 h 53 v -84 z" } ]
+              [ "rect", { "x": 1.5, "y": 1.5, "width": 54, "height": 85, "fill": "#fff", "stroke": "#000", "stroke-width": "2" } ],
             ]
           },
           "ghostCard":{
