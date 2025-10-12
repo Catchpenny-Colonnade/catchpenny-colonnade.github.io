@@ -55,22 +55,21 @@ namespace('scoundrel.ScoundrelGame',{
         deck: shuffle(deck),
         canRun: true,
         hp: 20,
-        equipt: false,
+        equipt: true,
         weapon: undefined,
         lastKill: undefined,
-        card1: undefined,
-        card2: undefined,
-        card3: undefined,
-        card4: undefined,
+        hand:Array(4),
         canDraw: true,
         potionUsed: false
       };
   }
-  const cards = [ "card1", "card2", "card3", "card4" ];
-  const staticDraw = function(state, deck, updates) {
-    cards.forEach((cardName) => {
-      if (!state[cardName]) {
-        updates[cardName] = deck.shift();
+  const staticDraw = function(hand, deck, updates) {
+    updates.hand = [];
+    hand.forEach((card) => {
+      if (!card) {
+        updates.hand.push(deck.shift());
+      } else {
+        updates.hand.push(card);
       }
     });
   }
@@ -82,37 +81,59 @@ namespace('scoundrel.ScoundrelGame',{
     draw() {
       const updates = { canRun: true };
       const deck = Array.from(this.state.deck);
-      staticDraw(this.state, deck, updates);
+      staticDraw(this.state.hand, deck, updates);
       updates.deck = deck;
+      updates.potionUsed = false;
       this.setState(updates);
     }
     run() {
       const deck = Array.from(this.state.deck);
-      const hand = shuffle(cards.map((cardName) => this.state[cardName]));
+      const hand = shuffle(Array.from(this.state.hand));
       while(hand.length > 0) {
         deck.push(hand.shift());
       }
-      const updates = { deck, canRun: false };
-      cards.forEach((cardName) => updates[cardName] = deck.shift());
+      const updates = { deck, canRun: false, potionUsed: false };
+      staticDraw(Array(4), deck, updates);
+      this.setState(updates);
     }
     handlePotion(updates, card, value) {
       updates.hp += value;
+      updates.potionUsed = true;
     }
     handleWeapon(updates, card, value) {
       updates.weapon = card;
     }
     handleEnemy(updates, card, value) {
-      updates.hp -= value;
+      if (this.state.weapon) {
+        if (this.state.lastKill) {
+          const lastKillValue = getCardValue(this.state.lastKill);
+          if (lastKillValue < value) {
+            updates.hp -= value;
+          } else {
+            const weaponValue = getCardValue(this.state.weapon);
+            updates.hp -= Math.max(0,(value - weaponValue));
+            updates.lastKill = card;
+          }
+        } else {
+          const weaponValue = getCardValue(this.state.weapon);
+          updates.hp -= Math.max(0,(value - weaponValue));
+          updates.lastKill = card;
+        }
+      } else {
+        updates.hp -= value;
+      }
     }
-    handleCard(cardName) {
-      const card = this.state[cardName];
+    handleCard(cardIndex) {
+      const hand = Array.from(this.state.hand);
+      const card = hand[cardIndex];
+      hand[cardIndex] = undefined;
       const suit = getSuit(card);
       const value = getCardValue(card);
       const updates = {
         canRun: false,
-        hp: this.state.hp
+        hp: this.state.hp,
+        hand
       };
-      updates.cardName = null;
       if (suit == "H") {
         this.handlePotion(updates, card, value);
       } else if (suit == "D") {
@@ -120,6 +141,8 @@ namespace('scoundrel.ScoundrelGame',{
       } else {
         this.handleEnemy(updates, card, value);
       }
+      // todo -- handle canDraw
+      // todo -- endgame check
       this.setState(updates);
     }
     toggleEquipt() {
@@ -127,6 +150,10 @@ namespace('scoundrel.ScoundrelGame',{
     }
     dropWeapon() {
       this.setState({ weapon: undefined, lastKill: undefined });
+    }
+    isPotionLocked(card) {
+      const suit = getSuit(card);
+      if (suit) return this.state.potionUsed && suit == "H";
     }
     render() {
       return <>
@@ -143,29 +170,29 @@ namespace('scoundrel.ScoundrelGame',{
             { this.state.canRun && <button className="btn btn-success w-100" onClick={() => this.run()}>Run</button> }
           </div>
         </div>
-        <div className="row mb-1">
+        <div className="row mb-3">
           <div className="col-3" datatest-id="card1">
-            { this.state.card1 && 
-              <button className={ getSuitClass(this.state.card1) } onClick={() => this.handleCard('card1')}>
-                { displayCard(this.state.card1) }
+            { this.state.hand[0] && 
+              <button className={ getSuitClass(this.state.hand[0]) } disabled={ this.isPotionLocked(this.state.hand[0]) } onClick={() => this.handleCard(0)}>
+                { displayCard(this.state.hand[0]) }
               </button> }
           </div>
           <div className="col-3" datatest-id="card2">
-            { this.state.card2 && 
-              <button className={ getSuitClass(this.state.card2) } onClick={() => this.handleCard('card2')}>
-                { displayCard(this.state.card2) }
+            { this.state.hand[1] && 
+              <button className={ getSuitClass(this.state.hand[1]) } disabled={ this.isPotionLocked(this.state.hand[1]) } onClick={() => this.handleCard(1)}>
+                { displayCard(this.state.hand[1]) }
               </button> }
           </div>
           <div className="col-3" datatest-id="card3">
-            { this.state.card3 && 
-              <button className={ getSuitClass(this.state.card3) } onClick={() => this.handleCard('card3')}>
-                { displayCard(this.state.card3) }
+            { this.state.hand[2] && 
+              <button className={ getSuitClass(this.state.hand[2]) } disabled={ this.isPotionLocked(this.state.hand[2]) } onClick={() => this.handleCard(2)}>
+                { displayCard(this.state.hand[2]) }
               </button> }
           </div>
           <div className="col-3" datatest-id="card4">
-            { this.state.card4 && 
-              <button className={ getSuitClass(this.state.card4) } onClick={() => this.handleCard('card4')}>
-                { displayCard(this.state.card4) }
+            { this.state.hand[3] && 
+              <button className={ getSuitClass(this.state.hand[3]) } disabled={ this.isPotionLocked(this.state.hand[3]) } onClick={() => this.handleCard(3)}>
+                { displayCard(this.state.hand[3]) }
               </button> }
           </div>
         </div>
@@ -174,10 +201,10 @@ namespace('scoundrel.ScoundrelGame',{
             { this.state.weapon && <button className="btn btn-success w-100" onClick={() => this.toggleEquipt()}>{ this.state.equipt?'Unequipt':'Equipt' }</button> }
           </div>
           <div className="col-3" datatest-id="weapon">
-            { this.state.weapon && <span className="text-bg-danger w-100">{ displayCard(this.state.weapon) }</span> }
+            { this.state.weapon && <button className="btn btn-danger w-100" disabled="true">{ displayCard(this.state.weapon) }</button> }
           </div>
           <div className="col-3" datatest-id="lastKill">
-            { this.state.lastKill && <span className="text-bg-secondary w-100">{ displayCard(this.state.lastKill) }</span> }
+            { this.state.lastKill && <button className="btn btn-secondary w-100 h-100" disabled="true">{ displayCard(this.state.lastKill) }</button> }
           </div>
           <div className="col-3" datatest-id="drop">
             { this.state.weapon && <button className="btn btn-success w-100" onClick={() => this.dropWeapon()}>Drop</button> }

@@ -21,7 +21,6 @@
         <!-- init script -->
         <script type="text/babel">
             (function(){
-                window.onbeforeunload = () => "Are you sure you want to leave your game?";
                 const ScoundrelGame = importNamespace("scoundrel.ScoundrelGame");
                 ReactDOM.createRoot(document.getElementById("app-root")).render(<ScoundrelGame/>);
             })()
