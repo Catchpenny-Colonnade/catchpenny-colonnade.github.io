@@ -80,7 +80,7 @@ namespace('scoundrel.ScoundrelGame',{
       this.state = getInitState();
     }
     draw() {
-      const updates = {};
+      const updates = { canRun: true };
       const deck = Array.from(this.state.deck);
       staticDraw(this.state, deck, updates);
       updates.deck = deck;
@@ -95,26 +95,32 @@ namespace('scoundrel.ScoundrelGame',{
       const updates = { deck, canRun: false };
       cards.forEach((cardName) => updates[cardName] = deck.shift());
     }
-    handlePotion(cardName, card, value) {
-      // todo
+    handlePotion(updates, card, value) {
+      updates.hp += value;
     }
-    handleWeapon(cardName, card, value) {
-      // todo
+    handleWeapon(updates, card, value) {
+      updates.weapon = card;
     }
-    handleEnemy(cardName, card, value) {
-      // todo
+    handleEnemy(updates, card, value) {
+      updates.hp -= value;
     }
     handleCard(cardName) {
       const card = this.state[cardName];
       const suit = getSuit(card);
       const value = getCardValue(card);
+      const updates = {
+        canRun: false,
+        hp: this.state.hp
+      };
+      updates.cardName = null;
       if (suit == "H") {
-        handlePotion(cardName, card, value);
+        this.handlePotion(updates, card, value);
       } else if (suit == "D") {
-        handleWeapon(cardName, card, value);
+        this.handleWeapon(updates, card, value);
       } else {
-        handleEnemy(cardName, card, value);
+        this.handleEnemy(updates, card, value);
       }
+      this.setState(updates);
     }
     toggleEquipt() {
       this.setState({ equipt: !this.state.equipt });
