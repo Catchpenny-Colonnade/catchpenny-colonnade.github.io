@@ -8,13 +8,19 @@ namespace('scoundrel.ScoundrelGame',{
     "S": [ "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" ],
   };
   const suitClass = {
-    "C": "btn btn-dark",
-    "D": "btn btn-danger",
-    "H": "btn btn-danger",
-    "S": "btn btn-dark"
+    "C": "btn btn-secondary w-100",
+    "D": "btn btn-danger w-100",
+    "H": "btn btn-danger w-100",
+    "S": "btn btn-secondary w-100"
+  };
+  const iconChars = {
+    "C": "\u2663",
+    "D": "\u2666",
+    "H": "\u2665",
+    "S": "\u2660"
   };
   const getSuit = function(card) {
-    return suits.filter((suit) => card.endsWith(suit))[0];
+    if (card) return suits.filter((suit) => card.endsWith(suit))[0];
   }
   const getCardValue = function(card) {
     const suit = getSuit(card);
@@ -23,10 +29,15 @@ namespace('scoundrel.ScoundrelGame',{
     return index + 2;
   }
   const getSuitClass = function(card) {
-    return suitClass[getSuit(card)];
+    var suit = getSuit(card);
+    if (suit) return suitClass[getSuit(card)];
+  }
+  const displayCard = function(card) {
+    const suit = getSuit(card);
+    return card.replace(suit, iconChars[suit]);
   }
   const deck = Object.keys(cardRanksBySuit).reduce((deck, suit) => {
-    cardRanksBySuit.forEach((rank) => {
+    cardRanksBySuit[suit].forEach((rank) => {
       deck.push(rank + suit);
     });
     return deck;
@@ -35,7 +46,7 @@ namespace('scoundrel.ScoundrelGame',{
     var oldDeck = Array.from(deck);
     var newDeck = [];
     while(oldDeck.length > 0) {
-      newDeck.push(oldDeck.splice(Math.random() * oldDeck.length, 1));
+      newDeck = newDeck.concat(oldDeck.splice(Math.random() * oldDeck.length, 1));
     }
     return newDeck;
   }
@@ -58,7 +69,7 @@ namespace('scoundrel.ScoundrelGame',{
   const cards = [ "card1", "card2", "card3", "card4" ];
   const staticDraw = function(state, deck, updates) {
     cards.forEach((cardName) => {
-      if (!this.state[cardName]) {
+      if (!state[cardName]) {
         updates[cardName] = deck.shift();
       }
     });
@@ -113,57 +124,57 @@ namespace('scoundrel.ScoundrelGame',{
     }
     render() {
       return <>
-        <div class="row">
-          <div class="col-3" datatest-id="deck">
-            { this.state.deck.length > 0 && <button class="btn btn-primary" disabled={ !this.state.canDraw } onClick={() => this.draw()}>Draw</button> }
+        <div className="row mb-3 mt-4">
+          <div className="col-3" datatest-id="deck">
+            { this.state.deck.length > 0 && <button className="btn btn-primary w-100" disabled={ !this.state.canDraw } onClick={() => this.draw()}>Draw</button> }
           </div>
-          <div class="col-3" datatest-id="hp">
-            <span>{ this.state.hp }</span>
+          <div className="col-3 text-center" datatest-id="hp">
+            <span className="w-100 text-center">{ this.state.hp }</span>
           </div>
-          <div class="col-3">
+          <div className="col-3">
           </div>
-          <div class="col-3" datatest-id="run">
-            { this.state.canRun && <button class="btn btn-secondary" onClick={() => this.run()}>Run</button> }
+          <div className="col-3" datatest-id="run">
+            { this.state.canRun && <button className="btn btn-success w-100" onClick={() => this.run()}>Run</button> }
           </div>
         </div>
-        <div class="row">
-          <div class="col-3" datatest-id="card1">
+        <div className="row mb-1">
+          <div className="col-3" datatest-id="card1">
             { this.state.card1 && 
-              <button class={ getSuitClass(this.state.card1) } onClick={() => this.handleCard('card1')}>
-                { this.state.card1 }
+              <button className={ getSuitClass(this.state.card1) } onClick={() => this.handleCard('card1')}>
+                { displayCard(this.state.card1) }
               </button> }
           </div>
-          <div class="col-3" datatest-id="card2">
+          <div className="col-3" datatest-id="card2">
             { this.state.card2 && 
-              <button class={ getSuitClass(this.state.card2) } onClick={() => this.handleCard('card2')}>
-                { this.state.card2 }
+              <button className={ getSuitClass(this.state.card2) } onClick={() => this.handleCard('card2')}>
+                { displayCard(this.state.card2) }
               </button> }
           </div>
-          <div class="col-3" datatest-id="card3">
+          <div className="col-3" datatest-id="card3">
             { this.state.card3 && 
-              <button class={ getSuitClass(this.state.card3) } onClick={() => this.handleCard('card3')}>
-                { this.state.card3 }
+              <button className={ getSuitClass(this.state.card3) } onClick={() => this.handleCard('card3')}>
+                { displayCard(this.state.card3) }
               </button> }
           </div>
-          <div class="col-3" datatest-id="card4">
+          <div className="col-3" datatest-id="card4">
             { this.state.card4 && 
-              <button class={ getSuitClass(this.state.card4) } onClick={() => this.handleCard('card4')}>
-                { this.state.card4 }
+              <button className={ getSuitClass(this.state.card4) } onClick={() => this.handleCard('card4')}>
+                { displayCard(this.state.card4) }
               </button> }
           </div>
         </div>
-        <div class="row">
-          <div class="col-3" datatest-id="toggleEquip">
-            { this.state.weapon && <button class="btn btn-secondary" onClick={() => this.toggleEquipt()}>{ this.state.equipt?'Unequipt':'Equipt' }</button> }
+        <div className="row">
+          <div className="col-3" datatest-id="toggleEquip">
+            { this.state.weapon && <button className="btn btn-success w-100" onClick={() => this.toggleEquipt()}>{ this.state.equipt?'Unequipt':'Equipt' }</button> }
           </div>
-          <div class="col-3" datatest-id="weapon">
-            { this.state.weapon && <span class="text-bg-danger">{this.state.weapon}</span> }
+          <div className="col-3" datatest-id="weapon">
+            { this.state.weapon && <span className="text-bg-danger w-100">{ displayCard(this.state.weapon) }</span> }
           </div>
-          <div class="col-3" datatest-id="lastKill">
-            { this.state.lastKill && <span class="text-bg-dark">{this.state.lastKill}</span> }
+          <div className="col-3" datatest-id="lastKill">
+            { this.state.lastKill && <span className="text-bg-secondary w-100">{ displayCard(this.state.lastKill) }</span> }
           </div>
-          <div class="col-3" datatest-id="drop">
-            { this.state.weapon && <button class="btn btn-secondary" onClick={() => this.dropWeapon()}>Drop</button> }
+          <div className="col-3" datatest-id="drop">
+            { this.state.weapon && <button className="btn btn-success w-100" onClick={() => this.dropWeapon()}>Drop</button> }
           </div>
         </div>
       </>;
