@@ -23,7 +23,8 @@ namespace("pyramid.PyramidGame", {
         const deck = Deck.shuffle(initDeck);
         return {
             pyramid: deck.splice(0,28),
-            drawPile: deck
+            dealPile: deck,
+            drawPile: []
         };
     }
     return class extends React.Component {
@@ -31,7 +32,16 @@ namespace("pyramid.PyramidGame", {
             super(props);
             this.state = buildInitState();
         }
-        handleCard(index) {
+        draw() {
+            // todo
+        }
+        reset() {
+            // todo
+        }
+        tagPile() {
+            // todo
+        }
+        tagCard(cardIndex) {
             // todo
         }
         render() {
@@ -43,11 +53,27 @@ namespace("pyramid.PyramidGame", {
                             const suitClass = Card.getSuitClass(card);
                             const displayCard = Card.displayCard(card);
                             return <div className="col-2">
-                                <button className={suitClass} onClick={() => this.handleCard(cardIndex)}>{ displayCard }</button>
+                                <button className={suitClass} onClick={() => this.tagCard(cardIndex)}>{ displayCard }</button>
                             </div>;
                         })}
                     </div>)
                 }
+                <div className="d-flex justify-content-center mb-2 mt-2">
+                    <div className="col-2"></div>
+                </div>
+                <div className="d-flex justify-content-center mb-2 mt-2">
+                    <div className="col-2"></div>
+                    <div className="col-2">
+                        { this.state.dealPile.length > 0 && <button className="btn btn-primary w-100" onClick={() => this.draw()}>Draw</button> }
+                        { this.state.dealPile.length == 0 && <button className="btn btn-warning w-100" onClick={() => this.reset()}>Reset</button> }
+                    </div>
+                    <div className="col-2">
+                        { this.state.drawPile[0] && <button className={suitClass} onClick={() => this.tagPile()}>{ this.state.drawPile[0] }</button> }
+                    </div>
+                    <div className="col-2"></div>
+                    <div className="col-2"></div>
+                    <div className="col-2"></div>
+                </div>
             </div>;
         }
     }
