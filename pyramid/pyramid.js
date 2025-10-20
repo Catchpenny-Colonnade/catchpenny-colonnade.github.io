@@ -35,6 +35,7 @@ namespace("pyramid.PyramidGame", {
             drawPile: [],
             isPileTagged: false,
             taggedIndicies: [],
+            gameOver: false
         };
     }
     return class extends React.Component {
@@ -76,7 +77,6 @@ namespace("pyramid.PyramidGame", {
             }
         }
         handleTags(tags) {
-            console.log({ tags });
             const { taggedIndicies, isPileTagged } = tags;
             var tagCount = taggedIndicies.length + isPileTagged?1:0;
             var valueTotal = taggedIndicies.reduce((sum, index) => sum + getValue(this.state.pyramid[index]), isPileTagged?getValue(this.state.drawPile[0]):0);
@@ -88,7 +88,8 @@ namespace("pyramid.PyramidGame", {
                 taggedIndicies.forEach(index => {
                     statePyramid[index] = undefined;
                 });
-                this.setState({ drawPile, pyramid: statePyramid, taggedIndicies: [], isPileTagged: false });
+                var gameOver = (statePyramid.filter(card => !!card).length == 0);
+                this.setState({ gameOver, drawPile, pyramid: statePyramid, taggedIndicies: [], isPileTagged: false });
             } else if (tagCount < 2) {
                 this.setState(tags);
             } else {
@@ -99,36 +100,50 @@ namespace("pyramid.PyramidGame", {
             const drawCard = this.state.drawPile[0];
             const drawCardSuitClass = Card.getSuitClass(drawCard);
             const displayDrawCard = Card.displayCard(drawCard);
-            return <div className="d-flex flex-column h-100 mt-5">
-                {
-                    pyramid.map((row, r) => <div className="d-flex justify-content-center mb-2 mt-2">
-                        { row.map((cardIndex, cell) => {
-                            const card = this.state.pyramid[cardIndex];
-                            const suitClass = Card.getSuitClass(card);
-                            const displayCard = Card.displayCard(card);
-                            return <div className="col-2">
-                                { displayCard && <button className={`${ suitClass }${this.isTagged(cardIndex)?tagBorder:''}`} disabled={ !this.isFree(r, cell) } onClick={() => this.tagCard(cardIndex)}>{ displayCard }</button> }
-                            </div>;
-                        })}
-                    </div>)
-                }
-                <div className="d-flex justify-content-center mb-2 mt-2">
-                    <div className="col-2"></div>
-                </div>
-                <div className="d-flex justify-content-center mb-2 mt-2">
-                    <div className="col-2"></div>
-                    <div className="col-2">
-                        { this.state.dealPile.length > 0 && <button className="btn btn-primary w-100" onClick={() => this.draw()}>Draw</button> }
-                        { this.state.dealPile.length == 0 && <button className="btn btn-warning w-100" onClick={() => this.reset()}>Reset</button> }
+            return <>
+            { this.state.gameOver && <div className="d-flex flex-column h-100 mt-5">
+                    <div className="d-flex justify-content-center">
+                        <h2>You've Completed The Pyramid!</h2>
                     </div>
-                    <div className="col-2">
-                        { drawCard && <button className={`${ drawCardSuitClass }${this.state.isPileTagged?tagBorder:''}`} onClick={() => this.tagPile()}>{ displayDrawCard }</button> }
+                    <div className="d-flex justify-content-center">
+                        <h3>Refresh the page to play again.</h3>
                     </div>
-                    <div className="col-2"></div>
-                    <div className="col-2"></div>
-                    <div className="col-2"></div>
+                </div>}
+            {
+                !this.state.gameOver &&
+                <div className="d-flex flex-column h-100 mt-5">
+                    {
+                        pyramid.map((row, r) => <div className="d-flex justify-content-center mb-2 mt-2">
+                            { row.map((cardIndex, cell) => {
+                                const card = this.state.pyramid[cardIndex];
+                                const suitClass = Card.getSuitClass(card);
+                                const displayCard = Card.displayCard(card);
+                                return <div className="col-2">
+                                    { displayCard && <button className={`${ suitClass }${this.isTagged(cardIndex)?tagBorder:''}`} disabled={ !this.isFree(r, cell) } onClick={() => this.tagCard(cardIndex)}>{ displayCard }</button> }
+                                </div>;
+                            })}
+                        </div>)
+                    }
+                    <div className="d-flex justify-content-center mb-2 mt-2">
+                        <div className="col-2"></div>
+                    </div>
+                    <div className="d-flex justify-content-center mb-2 mt-2">
+                        <div className="col-2"></div>
+                        <div className="col-2">
+                            { this.state.dealPile.length > 0 && <button className="btn btn-primary w-100" onClick={() => this.draw()}>Draw</button> }
+                            { this.state.dealPile.length == 0 && <button className="btn btn-warning w-100" onClick={() => this.reset()}>Reset</button> }
+                        </div>
+                        <div className="col-2">
+                            { drawCard && <button className={`${ drawCardSuitClass }${this.state.isPileTagged?tagBorder:''}`} onClick={() => this.tagPile()}>{ displayDrawCard }</button> }
+                        </div>
+                        <div className="col-2"></div>
+                        <div className="col-2"></div>
+                        <div className="col-2"></div>
+                    </div>
                 </div>
-            </div>;
+            }
+            </>
+;
         }
     }
 });
