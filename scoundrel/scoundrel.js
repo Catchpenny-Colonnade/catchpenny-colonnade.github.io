@@ -1,69 +1,37 @@
 namespace('scoundrel.ScoundrelGame',{
-},() => {
-  const suits = [ "C", "D", "H", "S" ];
+  "common.CardDisplay": "Card",
+  "common.CardLogic": "Deck"
+},({ Card, Deck }) => {
+  const ranksAceLast = Deck.getRanksAceLast();
+  const redRanks = Array.from(ranksAceLast).splice(0,9);
   const cardRanksBySuit = {
-    "C": [ "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" ],
-    "D": [ "2", "3", "4", "5", "6", "7", "8", "9", "10" ],
-    "H": [ "2", "3", "4", "5", "6", "7", "8", "9", "10" ],
-    "S": [ "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" ],
+    "C": Array.from(ranksAceLast),
+    "D": Array.from(redRanks),
+    "H": Array.from(redRanks),
+    "S": Array.from(ranksAceLast),
   };
-  const suitClass = {
-    "C": "btn btn-secondary w-100",
-    "D": "btn btn-danger w-100",
-    "H": "btn btn-danger w-100",
-    "S": "btn btn-secondary w-100"
-  };
-  const iconChars = {
-    "C": "\u2663",
-    "D": "\u2666",
-    "H": "\u2665",
-    "S": "\u2660"
-  };
-  const getSuit = function(card) {
-    if (card) return suits.filter((suit) => card.endsWith(suit))[0];
-  }
   const getCardValue = function(card) {
-    const suit = getSuit(card);
+    const suit = Card.getSuit(card);
     const rank = card.replace(suit, "");
-    const index = cardRanksBySuit[suit].indexOf(rank);
+    const index = ranksAceLast.indexOf(rank);
     return index + 2;
   }
-  const getSuitClass = function(card) {
-    var suit = getSuit(card);
-    if (suit) return suitClass[getSuit(card)];
-  }
-  const displayCard = function(card) {
-    const suit = getSuit(card);
-    return card.replace(suit, iconChars[suit]);
-  }
-  const deck = Object.keys(cardRanksBySuit).reduce((deck, suit) => {
-    cardRanksBySuit[suit].forEach((rank) => {
-      deck.push(rank + suit);
-    });
-    return deck;
-  }, [])
-  const shuffle = function(deck) {
-    var oldDeck = Array.from(deck);
-    var newDeck = [];
-    while(oldDeck.length > 0) {
-      newDeck = newDeck.concat(oldDeck.splice(Math.random() * oldDeck.length, 1));
-    }
-    return newDeck;
-  }
+  const deck = Deck.buildDeck(cardRanksBySuit);
   const getInitState = function() {
     return {
-        deck: shuffle(deck),
+        deck: Deck.shuffle(deck),
         canRun: true,
         hp: 20,
         equipt: true,
         weapon: undefined,
         lastKill: undefined,
-        hand:Array(4),
+        hand: Array.from(Array(4)),
         canDraw: true,
         potionUsed: false
       };
   }
   const staticDraw = function(hand, deck, updates) {
+    console.log({ hand, deck, updates });
     updates.hand = [];
     hand.forEach((card) => {
       if (!card) {
@@ -81,19 +49,20 @@ namespace('scoundrel.ScoundrelGame',{
     draw() {
       const updates = { canRun: true };
       const deck = Array.from(this.state.deck);
-      staticDraw(this.state.hand, deck, updates);
+      staticDraw(this.state.hand || Array.from(Array(4)), deck, updates);
       updates.deck = deck;
       updates.potionUsed = false;
+      console.log({ updates });
       this.setState(updates);
     }
     run() {
       const deck = Array.from(this.state.deck);
-      const hand = shuffle(Array.from(this.state.hand));
+      const hand = Deck.shuffle(Array.from(this.state.hand));
       while(hand.length > 0) {
         deck.push(hand.shift());
       }
       const updates = { deck, canRun: false, potionUsed: false };
-      staticDraw(Array(4), deck, updates);
+      staticDraw(Array.from(Array(4)), deck, updates);
       this.setState(updates);
     }
     handlePotion(updates, card, value) {
@@ -127,7 +96,7 @@ namespace('scoundrel.ScoundrelGame',{
       const hand = Array.from(this.state.hand);
       const card = hand[cardIndex];
       hand[cardIndex] = undefined;
-      const suit = getSuit(card);
+      const suit = Card.getSuit(card);
       const value = getCardValue(card);
       const updates = {
         canRun: false,
@@ -152,7 +121,7 @@ namespace('scoundrel.ScoundrelGame',{
       this.setState({ weapon: undefined, lastKill: undefined });
     }
     isPotionLocked(card) {
-      const suit = getSuit(card);
+      const suit = Card.getSuit(card);
       if (suit) return this.state.potionUsed && suit == "H";
     }
     render() {
@@ -173,26 +142,26 @@ namespace('scoundrel.ScoundrelGame',{
         <div className="row mb-3">
           <div className="col-3" datatest-id="card1">
             { this.state.hand[0] && 
-              <button className={ getSuitClass(this.state.hand[0]) } disabled={ this.isPotionLocked(this.state.hand[0]) } onClick={() => this.handleCard(0)}>
-                { displayCard(this.state.hand[0]) }
+              <button className={ Card.getSuitClass(this.state.hand[0]) } disabled={ this.isPotionLocked(this.state.hand[0]) } onClick={() => this.handleCard(0)}>
+                { Card.displayCard(this.state.hand[0]) }
               </button> }
           </div>
           <div className="col-3" datatest-id="card2">
             { this.state.hand[1] && 
-              <button className={ getSuitClass(this.state.hand[1]) } disabled={ this.isPotionLocked(this.state.hand[1]) } onClick={() => this.handleCard(1)}>
-                { displayCard(this.state.hand[1]) }
+              <button className={ Card.getSuitClass(this.state.hand[1]) } disabled={ this.isPotionLocked(this.state.hand[1]) } onClick={() => this.handleCard(1)}>
+                { Card.displayCard(this.state.hand[1]) }
               </button> }
           </div>
           <div className="col-3" datatest-id="card3">
             { this.state.hand[2] && 
-              <button className={ getSuitClass(this.state.hand[2]) } disabled={ this.isPotionLocked(this.state.hand[2]) } onClick={() => this.handleCard(2)}>
-                { displayCard(this.state.hand[2]) }
+              <button className={ Card.getSuitClass(this.state.hand[2]) } disabled={ this.isPotionLocked(this.state.hand[2]) } onClick={() => this.handleCard(2)}>
+                { Card.displayCard(this.state.hand[2]) }
               </button> }
           </div>
           <div className="col-3" datatest-id="card4">
             { this.state.hand[3] && 
-              <button className={ getSuitClass(this.state.hand[3]) } disabled={ this.isPotionLocked(this.state.hand[3]) } onClick={() => this.handleCard(3)}>
-                { displayCard(this.state.hand[3]) }
+              <button className={ Card.getSuitClass(this.state.hand[3]) } disabled={ this.isPotionLocked(this.state.hand[3]) } onClick={() => this.handleCard(3)}>
+                { Card.displayCard(this.state.hand[3]) }
               </button> }
           </div>
         </div>
@@ -201,10 +170,10 @@ namespace('scoundrel.ScoundrelGame',{
             { this.state.weapon && <button className="btn btn-success w-100" onClick={() => this.toggleEquipt()}>{ this.state.equipt?'Unequipt':'Equipt' }</button> }
           </div>
           <div className="col-3" datatest-id="weapon">
-            { this.state.weapon && <button className="btn btn-danger w-100" disabled="true">{ displayCard(this.state.weapon) }</button> }
+            { this.state.weapon && <button className="btn btn-danger w-100" disabled="true">{ Card.displayCard(this.state.weapon) }</button> }
           </div>
           <div className="col-3" datatest-id="lastKill">
-            { this.state.lastKill && <button className="btn btn-secondary w-100 h-100" disabled="true">{ displayCard(this.state.lastKill) }</button> }
+            { this.state.lastKill && <button className="btn btn-secondary w-100 h-100" disabled="true">{ Card.displayCard(this.state.lastKill) }</button> }
           </div>
           <div className="col-3" datatest-id="drop">
             { this.state.weapon && <button className="btn btn-success w-100" onClick={() => this.dropWeapon()}>Drop</button> }
