@@ -1,7 +1,11 @@
 namespace("common.CardLogic", {}, () => {
     const ranksAceLast = [ "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" ];
+    const ranksAceFirst = [ "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" ];
     const getRanksAceLast = function() {
         return Array.from(ranksAceLast);
+    }
+    const getRanksAceFirst = function() {
+        return Array.from(ranksAceFirst);
     }
     const buildDeck = function(cardRanksBySuit) {
         return Object.keys(cardRanksBySuit).reduce((deck, suit) => {
@@ -19,5 +23,5 @@ namespace("common.CardLogic", {}, () => {
         }
         return newDeck;
     }
-    return { getRanksAceLast, buildDeck, shuffle };
+    return { getRanksAceLast, getRanksAceFirst, buildDeck, shuffle };
 });

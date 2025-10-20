@@ -21,7 +21,7 @@ namespace("common.CardDisplay", {}, () => {
     }
     const displayCard = function(card) {
         const suit = getSuit(card);
-        return card.replace(suit, iconChars[suit]);
+        if (suit) return card.replace(suit, iconChars[suit]);
     }
     return { getSuit, getSuitClass, displayCard };
 });
