@@ -56,7 +56,7 @@ namespace("pyramid.PyramidGame", {
             this.setState({ dealPile, drawPile, isPileTagged: false, taggedIndicies: [] });
         }
         reset() {
-            this.setState({ dealPile: Array.from(this.state.drawPile).reverse(), drawPile: [], isPileTagged: false, taggedIndicies: [] });
+            this.setState({ dealPile: Array.from(this.state.drawPile), drawPile: [], isPileTagged: false, taggedIndicies: [] });
         }
         tagPile() {
             if (this.state.isPileTagged) {
