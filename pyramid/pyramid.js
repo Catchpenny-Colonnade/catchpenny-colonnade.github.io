@@ -62,7 +62,7 @@ namespace("pyramid.PyramidGame", {
             if (this.state.isPileTagged) {
                 this.setState({ isPileTagged: false });
             } else {
-                this.handleTags({ isPileTagged: true, taggedIndicies: this.state.taggedIndicies })
+                this.handleTags({ isPileTagged: true, taggedIndicies: this.state.taggedIndicies });
             }
         }
         tagCard(cardIndex) {
@@ -78,9 +78,10 @@ namespace("pyramid.PyramidGame", {
         }
         handleTags(tags) {
             const { taggedIndicies, isPileTagged } = tags;
-            var tagCount = taggedIndicies.length + isPileTagged?1:0;
+            var tagCount = taggedIndicies.length + (isPileTagged?1:0);
             var valueTotal = taggedIndicies.reduce((sum, index) => sum + getValue(this.state.pyramid[index]), isPileTagged?getValue(this.state.drawPile[0]):0);
             if (valueTotal == 13 && tagCount <= 2) {
+                console.log({ path: "13" });
                 const [drawPile, statePyramid] = ["drawPile", "pyramid"].map((prop) => Array.from(this.state[prop]));
                 if (isPileTagged) {
                     drawPile.shift();
@@ -91,8 +92,10 @@ namespace("pyramid.PyramidGame", {
                 var gameOver = (statePyramid.filter(card => !!card).length == 0);
                 this.setState({ gameOver, drawPile, pyramid: statePyramid, taggedIndicies: [], isPileTagged: false });
             } else if (tagCount < 2) {
+                console.log({ path: "tagCount", tagCount, taggedIndicies, isPileTagged });
                 this.setState(tags);
             } else {
+                console.log({ path: "clear tags" });
                 this.setState({ taggedIndicies: [], isPileTagged: false });
             }
         }
