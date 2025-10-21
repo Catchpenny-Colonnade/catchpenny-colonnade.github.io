@@ -47,7 +47,7 @@ namespace('scoundrel.ScoundrelGame',{
       this.state = getInitState();
     }
     draw() {
-      const updates = { canRun: true };
+      const updates = { canRun: true, canDraw: false };
       const deck = Array.from(this.state.deck);
       staticDraw(this.state.hand || Array.from(Array(4)), deck, updates);
       updates.deck = deck;
@@ -61,7 +61,7 @@ namespace('scoundrel.ScoundrelGame',{
       while(hand.length > 0) {
         deck.push(hand.shift());
       }
-      const updates = { deck, canRun: false, potionUsed: false };
+      const updates = { deck, canRun: false, potionUsed: false, canDraw: true };
       staticDraw(Array.from(Array(4)), deck, updates);
       this.setState(updates);
     }
@@ -110,7 +110,7 @@ namespace('scoundrel.ScoundrelGame',{
       } else {
         this.handleEnemy(updates, card, value);
       }
-      // todo -- handle canDraw
+      updates.canDraw = (hand.filter(card => !!card).length <= 1);
       // todo -- endgame check
       this.setState(updates);
     }
