@@ -67,8 +67,10 @@ namespace('scoundrel.ScoundrelGame',{
       this.setState(updates);
     }
     handlePotion(updates, card, value) {
-      updates.hp = Math.min(20, updates.hp + value);
-      updates.potionUsed = true;
+      if (!updates.potionUsed) {
+        updates.hp = Math.min(20, updates.hp + value);
+        updates.potionUsed = true;
+      }
     }
     handleWeapon(updates, card, value) {
       updates.weapon = card;
@@ -102,6 +104,7 @@ namespace('scoundrel.ScoundrelGame',{
       const updates = {
         canRun: false,
         hp: this.state.hp,
+        potionUsed: this.state.potionUsed,
         hand
       };
       if (suit == "H") {
