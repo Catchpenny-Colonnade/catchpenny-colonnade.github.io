@@ -87,9 +87,13 @@ namespace('scoundrel.ScoundrelGame',{
             updates.lastKill = card;
           }
         } else {
-          const weaponValue = getCardValue(this.state.weapon);
-          updates.hp = Math.max(0,updates.hp-Math.max(0,(value - weaponValue)));
-          updates.lastKill = card;
+          if (this.state.equipt) {
+            const weaponValue = getCardValue(this.state.weapon);
+            updates.hp = Math.max(0,updates.hp-Math.max(0,(value - weaponValue)));
+            updates.lastKill = card;
+          } else {
+            updates.hp = Math.max(0,updates.hp-value);
+          }
         }
       } else {
         updates.hp = Math.max(0,updates.hp-value);
@@ -153,7 +157,7 @@ namespace('scoundrel.ScoundrelGame',{
         !this.state.gameOver && <>
           <div className="row mb-3 mt-4">
             <div className="col-3" datatest-id="deck">
-              { this.state.deck.length > 0 && <button className="btn btn-primary w-100" disabled={ !this.state.canDraw } onClick={() => this.draw()}>Draw</button> }
+              { this.state.deck.length > 0 && <button className="btn btn-primary w-100" disabled={ !this.state.canDraw } onClick={() => this.draw()}><h3>Draw</h3></button> }
             </div>
             <div className="col-3 text-center" datatest-id="hp">
               <span className="w-100 text-center">{ this.state.hp }</span>
@@ -161,47 +165,47 @@ namespace('scoundrel.ScoundrelGame',{
             <div className="col-3">
             </div>
             <div className="col-3" datatest-id="run">
-              { this.state.canRun && <button className="btn btn-success w-100" onClick={() => this.run()}>Run</button> }
+              { this.state.canRun && <button className="btn btn-success w-100" onClick={() => this.run()}><h3>Run</h3></button> }
             </div>
           </div>
           <div className="row mb-3">
             <div className="col-3" datatest-id="card1">
               { this.state.hand[0] && 
                 <button className={ !this.isPotionLocked(this.state.hand[0])?Card.getSuitClass(this.state.hand[0]):Card.getSuitOutlineClass(this.state.hand[0]) } onClick={() => this.handleCard(0)}>
-                  { Card.displayCard(this.state.hand[0]) }
+                  <h3>{ Card.displayCard(this.state.hand[0]) }</h3>
                 </button> }
             </div>
             <div className="col-3" datatest-id="card2">
               { this.state.hand[1] && 
                 <button className={ !this.isPotionLocked(this.state.hand[1])?Card.getSuitClass(this.state.hand[1]):Card.getSuitOutlineClass(this.state.hand[1]) } onClick={() => this.handleCard(1)}>
-                  { Card.displayCard(this.state.hand[1]) }
+                  <h3>{ Card.displayCard(this.state.hand[1]) }</h3>
                 </button> }
             </div>
             <div className="col-3" datatest-id="card3">
               { this.state.hand[2] && 
                 <button className={ !this.isPotionLocked(this.state.hand[2])?Card.getSuitClass(this.state.hand[2]):Card.getSuitOutlineClass(this.state.hand[2]) } onClick={() => this.handleCard(2)}>
-                  { Card.displayCard(this.state.hand[2]) }
+                  <h3>{ Card.displayCard(this.state.hand[2]) }</h3>
                 </button> }
             </div>
             <div className="col-3" datatest-id="card4">
               { this.state.hand[3] && 
                 <button className={ !this.isPotionLocked(this.state.hand[3])?Card.getSuitClass(this.state.hand[3]):Card.getSuitOutlineClass(this.state.hand[3]) } onClick={() => this.handleCard(3)}>
-                  { Card.displayCard(this.state.hand[3]) }
+                  <h3>{ Card.displayCard(this.state.hand[3]) }</h3>
                 </button> }
             </div>
           </div>
           <div className="row">
             <div className="col-3" datatest-id="toggleEquip">
-              { this.state.weapon && <button className="btn btn-success w-100" onClick={() => this.toggleEquipt()}>{ this.state.equipt?'Unequipt':'Equipt' }</button> }
+              { this.state.weapon && <button className="btn btn-success w-100" onClick={() => this.toggleEquipt()}><h3>{ this.state.equipt?'Unequipt':'Equipt' }</h3></button> }
             </div>
             <div className="col-3" datatest-id="weapon">
-              { this.state.weapon && <button className="btn btn-danger w-100" disabled="true">{ Card.displayCard(this.state.weapon) }</button> }
+              { this.state.weapon && <button className="btn btn-danger w-100" disabled="true"><h3>{ Card.displayCard(this.state.weapon) }</h3></button> }
             </div>
             <div className="col-3" datatest-id="lastKill">
-              { this.state.lastKill && <button className="btn btn-secondary w-100 h-100" disabled="true">{ Card.displayCard(this.state.lastKill) }</button> }
+              { this.state.lastKill && <button className="btn btn-secondary w-100 h-100" disabled="true"><h3>{ Card.displayCard(this.state.lastKill) }</h3></button> }
             </div>
             <div className="col-3" datatest-id="drop">
-              { this.state.weapon && <button className="btn btn-success w-100" onClick={() => this.dropWeapon()}>Drop</button> }
+              { this.state.weapon && <button className="btn btn-success w-100" onClick={() => this.dropWeapon()}><h3>Drop</h3></button> }
             </div>
           </div>
         </>
