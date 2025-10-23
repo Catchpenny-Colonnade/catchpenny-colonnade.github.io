@@ -117,11 +117,11 @@ namespace("pyramid.PyramidGame", {
                 <div className="d-flex flex-column h-100 mt-5">
                     <div className="d-flex justify-content-center">
                         <div className="col-2 m-3 p-2">
-                            { this.state.dealPile.length > 0 && <button className="btn btn-primary w-100" onClick={() => this.draw()}><h3>Draw</h3></button> }
-                            { this.state.dealPile.length == 0 && <button className="btn btn-warning w-100" onClick={() => this.reset()}><h3>Reset</h3></button> }
+                            { this.state.dealPile.length > 0 && <button className="btn btn-primary w-100" onClick={() => this.draw()}><h4>Draw</h4></button> }
+                            { this.state.dealPile.length == 0 && <button className="btn btn-warning w-100" onClick={() => this.reset()}><h4>Reset</h4></button> }
                         </div>
                         <div className="col-2 m-3 p-2">
-                            { drawCard && <button className={`${ drawCardSuitClass } ${this.state.isPileTagged?tagBorder:''}`} onClick={() => this.tagPile()}><h3>{ displayDrawCard }</h3></button> }
+                            { drawCard && <button className={`${ drawCardSuitClass } ${this.state.isPileTagged?tagBorder:''}`} onClick={() => this.tagPile()}><h4>{ displayDrawCard }</h4></button> }
                         </div>
                     </div>
                     <div className="d-flex justify-content-center flex-row-reverse mb-2">
@@ -130,8 +130,8 @@ namespace("pyramid.PyramidGame", {
                                 const card = this.state.pyramid[cardIndex];
                                 const suitClass = Card.getSuitClass(card) || "btn btn-outline-dark w-100";
                                 const displayCard = Card.displayCard(card) || "_";
-                                return <div className="w-100 m-3 p-2">
-                                    <button className={`${ suitClass } ${this.isTagged(cardIndex)?tagBorder:''}`} disabled={ !this.isFree(r, cell) || displayCard == "_" } onClick={() => this.tagCard(cardIndex)}><h3>{ displayCard }</h3></button>
+                                return <div className="w-100 m-1 p-2">
+                                    <button className={`${ suitClass } ${this.isTagged(cardIndex)?tagBorder:''}`} disabled={ !this.isFree(r, cell) || displayCard == "_" } onClick={() => this.tagCard(cardIndex)}><h4>{ displayCard }</h4></button>
                                 </div>;
                             })}
                         </div>)}
