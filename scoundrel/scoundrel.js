@@ -160,7 +160,7 @@ namespace('scoundrel.ScoundrelGame',{
               { this.state.deck.length > 0 && <button className="btn btn-primary w-100" disabled={ !this.state.canDraw } onClick={() => this.draw()}><h3>Draw</h3></button> }
             </div>
             <div className="col-3 text-center" datatest-id="hp">
-              <span className="w-100 text-center">{ this.state.hp }</span>
+              <span className="w-100 text-center"><h3>{ this.state.hp }</h3></span>
             </div>
             <div className="col-3">
             </div>
