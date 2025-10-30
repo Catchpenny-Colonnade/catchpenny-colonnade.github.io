@@ -124,13 +124,13 @@ namespace("pyramid.PyramidGame", {
                             { drawCard && <button className={`${ drawCardSuitClass } ${this.state.isPileTagged?tagBorder:''}`} onClick={() => this.tagPile()}><h4>{ displayDrawCard }</h4></button> }
                         </div>
                     </div>
-                    <div className="d-flex justify-content-center flex-row-reverse mb-2">
-                        { pyramid.map((row, r) => <div className="d-flex flex-column justify-content-center">
+                    <div className="d-flex justify-content-center flex-column-reverse mb-2 w-100">
+                        { pyramid.map((row, r) => <div className="d-flex justify-content-center">
                             { row.map((cardIndex, cell) => {
                                 const card = this.state.pyramid[cardIndex];
                                 const suitClass = Card.getSuitClass(card) || "btn btn-outline-dark w-100";
                                 const displayCard = Card.displayCard(card) || "_";
-                                return <div className="w-100 m-1 p-2">
+                                return <div className="col-1 w-100 m-1 p-2">
                                     <button className={`${ suitClass } ${this.isTagged(cardIndex)?tagBorder:''}`} disabled={ !this.isFree(r, cell) || displayCard == "_" } onClick={() => this.tagCard(cardIndex)}><h4>{ displayCard }</h4></button>
                                 </div>;
                             })}
