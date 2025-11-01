@@ -125,7 +125,10 @@ namespace("pyramid.PyramidGame", {
                         </div>
                     </div>
                     <div className="d-flex justify-content-center flex-column-reverse mb-2 w-100">
-                        { pyramid.map((row, r) => <div className="d-flex justify-content-center">
+                        { pyramid.map((row, r) => {
+                          const rowCardCount = row.filter((cardIndex) => !!this.state.pyramid[cardIndex]).length;
+                          if (rowCardCount <= 0) return <></>;
+                          return <div className="d-flex justify-content-center">
                             { row.map((cardIndex, cell) => {
                                 const card = this.state.pyramid[cardIndex];
                                 const suitClass = Card.getSuitClass(card) || "btn btn-outline-dark w-100";
@@ -134,7 +137,8 @@ namespace("pyramid.PyramidGame", {
                                     <button className={`${ suitClass } ${this.isTagged(cardIndex)?tagBorder:''}`} disabled={ !this.isFree(r, cell) || displayCard == "_" } onClick={() => this.tagCard(cardIndex)}><h4>{ displayCard }</h4></button>
                                 </div>;
                             })}
-                        </div>)}
+                          </div>;
+                        })}
                     </div>
                 </div>
             }
