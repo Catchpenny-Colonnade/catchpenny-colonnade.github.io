@@ -77,25 +77,26 @@ namespace('scoundrel.ScoundrelGame',{
     }
     handleEnemy(updates, card, value) {
       if (this.state.weapon) {
-        if (this.state.lastKill) {
-          const lastKillValue = getCardValue(this.state.lastKill);
-          if (lastKillValue < value) {
-            updates.hp = Math.max(0,updates.hp-value);
+        if (this.state.equipt) {
+          if (this.state.lastKill) {
+            const lastKillValue = getCardValue(this.state.lastKill);
+            if (lastKillValue < value) {
+              updates.hp = Math.max(0,updates.hp-value);
+            } else {
+              const weaponValue = getCardValue(this.state.weapon);
+              updates.hp = Math.max(0,updates.hp-Math.max(0,(value - weaponValue)));
+              updates.lastKill = card;
+            }
           } else {
             const weaponValue = getCardValue(this.state.weapon);
             updates.hp = Math.max(0,updates.hp-Math.max(0,(value - weaponValue)));
             updates.lastKill = card;
           }
         } else {
-          if (this.state.equipt) {
-            const weaponValue = getCardValue(this.state.weapon);
-            updates.hp = Math.max(0,updates.hp-Math.max(0,(value - weaponValue)));
-            updates.lastKill = card;
-          } else {
-            updates.hp = Math.max(0,updates.hp-value);
-          }
+          updates.hp = Math.max(0,updates.hp-value);
         }
       } else {
+        console.log("no weapon")
         updates.hp = Math.max(0,updates.hp-value);
       }
     }
@@ -129,6 +130,7 @@ namespace('scoundrel.ScoundrelGame',{
           updates.finalScore = Array.from(this.state.deck).concat(handCards).filter(card => Card.getSuitColor(card) == "black").map(card => getCardValue(card)).reduce((sum,value) => sum - value, 0);
         }
       }
+      console.log({ updates });
       this.setState(updates);
     }
     toggleEquipt() {
@@ -157,10 +159,10 @@ namespace('scoundrel.ScoundrelGame',{
         !this.state.gameOver && <>
           <div className="row mb-3 mt-4">
             <div className="col-3" datatest-id="deck">
-              { this.state.deck.length > 0 && <button className="btn btn-primary w-100" disabled={ !this.state.canDraw } onClick={() => this.draw()}><h3>Draw</h3></button> }
+              { this.state.deck.length > 0 && <button className="btn btn-primary w-100" disabled={ !this.state.canDraw } onClick={() => this.draw()}><h3>Draw ({this.state.deck.length})</h3></button> }
             </div>
             <div className="col-3 text-center" datatest-id="hp">
-              <span className="w-100 text-center"><h3>{ this.state.hp }</h3></span>
+              <span className="w-100 text-center"><h3>HP: { this.state.hp }</h3></span>
             </div>
             <div className="col-3">
             </div>
