@@ -248,7 +248,7 @@ namespace('bottles.BottleGame', {}, () => {
                 return acc;
               }, {});
               var colorKeys = Object.keys(indiciesByColor);
-              if (colorKeys.length != 1 || colorKeys[0].length != 4) {
+              if (colorKeys.length != 1 || indiciesByColor[colorKeys[0]].length != 4) {
                 return <button
                   className={`btn btn-link ${index === this.state.fromIndex ? 'border border-light border-3' : !isNaN(this.state.availableMoves) && index === this.state.availableMoves && 'border border-success border-3'}`}
                   onClick={() => { this.clickBottle(index) }}>
