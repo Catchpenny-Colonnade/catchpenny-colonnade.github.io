@@ -241,6 +241,15 @@ namespace('bottles.BottleGame', {}, () => {
                 availableMoves: undefined
               });
             }}>Retry Level</button>
+            <button className="btn btn-warning" onClick={() => {
+              var level = Array.from(this.state.level);
+              level.push([]);
+              this.setState({
+                level,
+                fromIndex: undefined,
+                availableMoves: getAvailableMoves(level)
+              });
+            }}>Add Bottle</button>
           </> : <>{
             this.state.level.map((bottle, index) => {
               var indiciesByColor = bottle.reduce((acc, color, i) => {
