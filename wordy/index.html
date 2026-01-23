@@ -24,6 +24,7 @@
   <!-- init script -->
   <script type="text/babel">
     (function () {
+      initKeyEventWrapper();
       const Wordy = importNamespace("wordy.Wordy"); // bottles.js
       ReactDOM.createRoot(document.getElementById("app-root")).render(<Wordy />);
     })()
