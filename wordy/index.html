@@ -9,7 +9,6 @@
 
   <!-- external dependencies -->
   <script src="https://gizmo-atheneum.github.io/structure/importnamespace/script.js"></script>
-  <script src="https://gizmo-atheneum.github.io/util/keyeventwrapper.js"></script>
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -24,7 +23,6 @@
   <!-- init script -->
   <script type="text/babel">
     (function () {
-      initKeyEventWrapper();
       const Wordy = importNamespace("wordy.Wordy"); // bottles.js
       ReactDOM.createRoot(document.getElementById("app-root")).render(<Wordy />);
     })()
