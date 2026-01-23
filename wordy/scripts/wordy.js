@@ -25,11 +25,26 @@ namespace("wordy.Wordy", {
       currentAttempt[index] = "";
       this.setState({ currentAttempt, stepIndex: index });
     }
-    update(value, index) {
+    update(event, index) {
+      console.log({ event, index })
+      var value = event.nativeEvent.data;
       const currentAttempt = Array.from(this.state.currentAttempt);
       currentAttempt[index] = value.toUpperCase();
       const openColumns = currentAttempt.map((letter,i) => [letter,i]).filter(pair => pair[0].length == 0).map(pair => pair[1]);
+      console.log({ openColumns });
       if (openColumns.length > 0) {
+        // set step index to next open column
+        const updateStepIndex = { currentAttempt };
+        const nextColumns = openColumns.filter(col => col > index);
+        if (nextColumns.length > 0) {
+          updateStepIndex.stepIndex = nextColumns[0];
+        } else {
+          // if none, set step index to first open column
+          updateStepIndex.stepIndex = openColumns[0];
+        }
+        console.log({ updateStepIndex });
+        this.setState(updateStepIndex);
+      } else {
         // add current attempt to attempts and clear current attempt and step index
         const attempts = Array.from(this.state.attempts);
         attempts.push(currentAttempt);
@@ -43,29 +58,20 @@ namespace("wordy.Wordy", {
         // if successful, set "win" state
           updates.win = true;
         }
+        console.log({ updates });
         this.setState(updates);
-      } else {
-        // set step index to next open column
-        const updateStepIndex = {};
-        const nextColumns = openColumns.filter(col => col > index);
-        if (nextColumns.length > 0) {
-          updateStepIndex.stepIndex = nextColumns[0];
-        } else {
-          // if none, set step index to first open column
-          updateStepIndex.stepIndex = openColumns[0];
-        }
-        this.setState(updateStepIndex);
       }
     }
     afterRender() {
       if (this.state.attempts.length >= maxAttempts) {
         // confirm loss, show solution and attempts
         confirm(`GAME OVER!\n\nUnfortunately, you could not solve for this word:\n\n\t${this.state.word}\n\nYou attempted:\n\n\t${this.state.attempts.map(attempt => attempt.join("")).join("\n\t")}`);
+        this.setState(getInitState());
       } else if (this.state.win == true) {
         // confirm win w/ attempt count
         confirm(`Congratulations!\n\nYou've solved the puzzle in only ${this.state.attempts.length} attempts!`);
+        this.setState(getInitState());
       }
-      this.setState(getInitState());
     }
     componentDidMount() {
       this.afterRender();
@@ -87,16 +93,21 @@ namespace("wordy.Wordy", {
             </tr>)}
             { this.state.attempts.length < maxAttempts && <tr>
               { this.state.currentAttempt.map((letter,index) => {
+                console.log({ letter, index, stepIndex: this.state.stepIndex });
                 return <td>
                   <h2>
-                    <input 
-                      type="text" 
-                      className={`form-control${(index == this.state.stepIndex ? " border border-success" : "")}`} 
-                      maxLength={1} 
-                      autoFocus={ index == this.state.stepIndex } 
-                      value={ letter } 
-                      onClick={() => this.refocus(index)} 
-                      onChange={(e) => this.update(e.target.value, index)}/>
+                    { letter == "" ? <>
+                      <input 
+                        type="text" 
+                        className={`form-control bg-dark text-light${(index == this.state.stepIndex ? " border border-success" : "")}`} 
+                        maxLength={2} 
+                        autoFocus={ (index == this.state.stepIndex) && "true" }
+                        disabled={ (index != this.state.stepIndex) && "true" }
+                        value={ letter } 
+                        onChange={(e) => this.update(e, index)}/>
+                    </>:<>
+                      <button className="btn btn-dark" onClick={() => this.refocus(index)}>{letter}</button>
+                    </>}
                   </h2>
                 </td>
               } ) }
