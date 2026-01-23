@@ -15,8 +15,11 @@ namespace("wordy.Wordy", {
         stepIndex: 0,
       };
       var me = this;
-      var keyHold = function(event) {
-        console.log({ event });
+      var keyHold = function({ detail }) {
+        var { code, key } = detail;
+        if (code.startsWith("Key")) {
+          console.log({ key });
+        }
       };
       document.addEventListener("keyhold", keyHold);
     }
