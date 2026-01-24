@@ -1,7 +1,17 @@
 namespace("wordy.Wordy", {
   "wordy.Words": "Words"
 }, ({ Words }) => {
-  const maxAttempts = 6
+  const maxAttempts = 6;
+  const blankIcon = "question"
+  const keyboard = [
+    "QWERTYUIOP", 
+    "ASDFGHJKL", 
+    "ZXCVBNM"
+  ];
+  const Icon = function(props) {
+    if (!props.name) throw "Icon name is a required attribute!";
+    return <i className={`fas fa-${props.name.toLowerCase()}`}></i>;
+  }
   const getInitState = function() {
     const word = Words[Math.floor(Math.random() * Words.length)].toUpperCase();
     const letterMap = word.split("").reduce((acc,letter,index) => {
