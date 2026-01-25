@@ -110,40 +110,57 @@ namespace("wordy.Wordy", {
     }
     render() {
       return <div className="d-flex justify-content-center w-100">
-        <table className="table">
-          <tbody>
-            { this.state.attempts.map(attempt => <tr>
-              { attempt.map((letter,index) => {
-                const buttonClass = isNaN(this.state.letterMap[letter])?"dark":((this.state.letterMap[letter]==index)?"success":"warning");
-                return <td>
-                  <h2 className={`text-light bg-${buttonClass}`} style={{textAlign:"center"}}>{letter}</h2>
-                </td>;
-              }) }
-            </tr>)}
-            { this.state.attempts.length < maxAttempts && <tr>
-              { this.state.currentAttempt.map((letter,index) => {
-                console.log({ letter, index, stepIndex: this.state.stepIndex });
-                return <td>
-                  <h2 style={{textAlign:"center"}}>
-                    { letter == "" ? <>
-                      <input 
-                        id={`input${index}`}
-                        type="text" 
-                        className={`form-control bg-dark text-light${(index == this.state.stepIndex ? " border border-success" : "")}`} 
-                        maxLength={2} 
-                        value={ letter } 
-                        onClick={() => this.refocus(index)}
-                        onChange={(e) => this.update(e, index)}
-                        style={{width:"2em"}}/>
-                    </>:<>
-                      <button className="btn btn-dark" onClick={() => this.refocus(index)}>{letter}</button>
-                    </>}
-                  </h2>
-                </td>
-              } ) }
-            </tr> }
-          </tbody>
-        </table>
+        <div className="d-flex flex-column justify-content-center w-100">
+          <div className="d-flex justify-content-center w-100">
+            <table className="table">
+              <tbody>
+                { this.state.attempts.map(attempt => <tr>
+                  { attempt.map((letter,index) => {
+                    const buttonClass = isNaN(this.state.letterMap[letter])?"dark":((this.state.letterMap[letter]==index)?"success":"warning");
+                    return <td>
+                      <h2 className={`text-light bg-${buttonClass}`} style={{textAlign:"center"}}>{letter}</h2>
+                    </td>;
+                  }) }
+                </tr>)}
+                { this.state.attempts.length < maxAttempts && <tr>
+                  { this.state.currentAttempt.map((letter,index) => {
+                    console.log({ letter, index, stepIndex: this.state.stepIndex });
+                    return <td>
+                      <h2 style={{textAlign:"center"}}>
+                        { letter == "" ? <>
+                          <input 
+                            id={`input${index}`}
+                            type="text" 
+                            className={`form-control bg-dark text-light${(index == this.state.stepIndex ? " border border-success" : "")}`} 
+                            maxLength={2} 
+                            value={ letter } 
+                            onClick={() => this.refocus(index)}
+                            onChange={(e) => this.update(e, index)}
+                            style={{width:"2em"}}/>
+                        </>:<>
+                          <button className="btn btn-dark" onClick={() => this.refocus(index)}>{letter}</button>
+                        </>}
+                      </h2>
+                    </td>
+                  } ) }
+                </tr> }
+              </tbody>
+            </table>
+          </div>
+          <div className="d-flex justify-content-center bg-secondary w-100">
+            <div className="d-flex flex-column justify-content-center">
+              { keyboard.map(row => <div className="d-flex justify-content-center">
+                { row.split("").map(letter => <div>
+                  <button className="btn btn-secondary text-center">
+                    <h2>
+                      <i className={`fas fa-${letter}`}></i>
+                    </h2>
+                  </button>
+                </div> ) }
+              </div> )}
+            </div>
+          </div>
+        </div>
       </div>;
     }
   }
