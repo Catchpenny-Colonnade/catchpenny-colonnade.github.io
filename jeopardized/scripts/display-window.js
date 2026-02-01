@@ -5,7 +5,8 @@ namespace("jeopardized.DisplayWindow", {}, () => {
     this.open = function(initState) {
       state.sidecar = window.open("", "_blank");
       state.sidecar.document.title = windowTitle;
-      state.sidecar.document.write(`<div id="${displayName}" class="${rootClass}"></div>`);
+      state.sidecar.document.body.setAttribute("class", rootClass);
+      state.sidecar.document.write(`<div id="${displayName}"></div>`);
       const root = state.sidecar.document.getElementById(displayName);
       ReactDOM.createRoot(root).render(<TemplateClass 
         initState={initState}
