@@ -1,0 +1,28 @@
+.gears-bg-dark {
+  background-color: #021039;
+}
+.gears-text-dark {
+  color: #021039;
+}
+.gears-border-dark {
+  border-color: #021039;
+}
+.gears-bg-primary {
+  background-color: #67A3FF;
+}
+.gears-text-primary {
+  color: #67A3FF;
+}
+.gears-border-primary {
+  border-color: #67A3FF;
+}
+.price-button {
+  padding-top: 2rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-bottom: 2rem;
+  height: 6rem;
+}
+.category-button {
+  min-height: 3em;
+}
