@@ -250,7 +250,7 @@ namespace('bottles.BottleGame', {}, () => {
                 availableMoves: getAvailableMoves(level)
               });
             }}>Add Bottle</button>
-          </> : <>{
+          </> : <div className="d-flex flex-wrap justify-content-center">{
             this.state.level.map((bottle, index) => {
               var indiciesByColor = bottle.reduce((acc, color, i) => {
                 acc[color] = (acc[color] || []).concat([i]);
@@ -261,7 +261,7 @@ namespace('bottles.BottleGame', {}, () => {
                 return <button
                   className={`btn btn-link ${index === this.state.fromIndex ? 'border border-light border-3' : !isNaN(this.state.availableMoves) && index === this.state.availableMoves && 'border border-success border-3'}`}
                   onClick={() => { this.clickBottle(index) }}>
-                  <div className="row">
+                  <div className="d-flex flex-column-reverse justify-content-center">
                     {colorIndicies.map((c, color) => {
                       const style = {
                         width: bottle[color] ? "100%" : "0%"
@@ -270,8 +270,8 @@ namespace('bottles.BottleGame', {}, () => {
                         style.color = getForegroundColor(bottle[color]);
                         style.backgroundColor = bottle[color];
                       }
-                      return <div className="col-3 m-0 p-0">
-                        <div className="progress w-100 m-1">
+                      return <div className="m-0 p-0 w-100">
+                        <div className="progress m-0">
                           <div
                             className="progress-bar h-3"
                             id={`${index}_${color}`}
@@ -284,7 +284,7 @@ namespace('bottles.BottleGame', {}, () => {
                 </button>;
               }
             })
-          }</>)}
+          }</div>)}
         </div>
       </>;
     }
