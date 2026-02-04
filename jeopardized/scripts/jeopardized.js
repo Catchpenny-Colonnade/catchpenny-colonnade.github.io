@@ -1,51 +1,64 @@
 namespace("jeopardized.Jeopardized", {
   "jeopardized.JeopardyBoard": "JeopardyBoard",
+  "jeopardized.JeopardyData": "JeopardyData",
   "jeopardized.JeopardyDisplay": "JeopardyDisplay",
   "jeopardized.DisplayWindow": "DisplayWindow",
-}, ({ JeopardyBoard, JeopardyDisplay, DisplayWindow }) => {
-  const newInitState = function() {
-    return {
-      categories:[
-        "Category 1",
-        "Category 2",
-        "Category 3",
-        "Category 4",
-        "Category 5",
-        "Category 6",
-      ],
-      prices: [
-        ["100","100","100","100","100","100"],
-        ["200","200","200","200","200","200"],
-        ["300","300","300","300","300","300"],
-        ["400","400","400","400","400","400"],
-        ["500","500","500","500","500","500"],
-      ]
-    };
-  };
+}, ({ JeopardyBoard, JeopardyData, JeopardyDisplay, DisplayWindow }) => {
+  const buildBoardDisplay = function(state) {
+    console.log({ state });
+    const categories = Object.keys(state.board);
+    const prices = state.prices.map(price => categories.map(category => {
+      return state.board[category][price]?price.toString():"";
+    }));
+    console.log({ categories, prices });
+    return { categories, prices };
+  }
+  const deepCopyObject = function(obj) {
+    if ((typeof obj) != obj) {
+      return obj;
+    } else {
+      return Object.entries(obj).reduce((acc,[k,v]) => {
+        acc[k] = deepCopyObject(v);
+        return acc;
+      }, {});
+    }
+  }
   return class extends React.Component {
     constructor(props) {
       super(props);
-      const { categories, prices } = newInitState();
-      this.state = {
-        categories, 
-        prices,
-        display: new DisplayWindow("playerView", "Jeopardized", "container gears-bg-dark text-light", JeopardyDisplay, {})
-      };
-      this.state.display.open({ categories, prices });
+      this.state = {};
     }
-    selectAnswer(categoryIndex, priceIndex) {
-      alert(`category: ${this.state.categories[categoryIndex]}, price: \$${this.state.prices[priceIndex][categoryIndex]}`);
-      var prices = this.state.prices.map(row => Array.from(row));
-      prices[priceIndex][categoryIndex] = "";
-      this.state.display.update({ prices });
-      this.setState({ prices });
+    startGame() {
+      JeopardyData.applyBoard("level-one", (initState) => {
+        initState.display =  new DisplayWindow("playerView", "./playerview.html", JeopardyDisplay, {});
+        initState.display.open(buildBoardDisplay(initState));
+        this.setState(initState);
+      });
+    }
+    selectAnswer(category, price) {
+      var { board, prices } = this.state;
+      board = deepCopyObject(board);
+      prices = Array.from(prices);
+      const { question, answer } = board[category][price];
+      this.state.display.update({ displayQuestion: { question, category, price } });
+      alert(`category:\n\t${category}\n\nprice:\n\t${price}\n\nquestion:\n\t${question}\n\nanswer:\n\t${answer}`);
+      delete board[category][price];
+      const displayUpdate = buildBoardDisplay({ board, prices });
+      displayUpdate.displayQuestion = undefined;
+      this.state.display.update(displayUpdate);
+      this.setState({ board, prices });
     }
     render() {
-      return <JeopardyBoard 
-        categories={this.state.categories} 
-        prices={this.state.prices}
-        onClick={ (catIndex, priceIndex) => this.selectAnswer(catIndex, priceIndex) }>
-      </JeopardyBoard>;
+      if(this.state.board) {
+        const boardDisplay = buildBoardDisplay(this.state)
+        return <JeopardyBoard 
+          categories={boardDisplay.categories} 
+          prices={boardDisplay.prices}
+          onClick={ (catIndex, priceIndex) => this.selectAnswer(catIndex, priceIndex) }>
+        </JeopardyBoard>;
+      } else {
+        return <button className="btn btn-primary" onClick={() => this.startGame()}>Start Game</button>
+      }
     }
   }
 });

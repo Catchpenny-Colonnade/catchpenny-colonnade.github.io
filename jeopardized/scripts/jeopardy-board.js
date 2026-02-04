@@ -11,11 +11,11 @@ namespace("jeopardized.JeopardyBoard", {}, () => {
               <h4 className="text-center gears-bg-primary rounded-3 category-button p-3 m-1 w-100">{cat}</h4>
             </div>)}
           </div>
-          { props.prices.map((row,priceIndex) => <div className="row">
+          { props.prices.map((row) => <div className="row">
             { row.map((price,catIndex) => <div className="col-2">
               <button 
                 className="btn text-light text-center gears-bg-primary rounded-3 price-button m-1 w-100"
-                onClick={() => props.onClick(catIndex,priceIndex)}>
+                onClick={() => props.onClick(props.categories[catIndex],price)}>
                 <h4>
                   { price.length > 0 && <>
                     <i className="fas fa-dollar-sign"></i>
