@@ -3,7 +3,10 @@ namespace("jeopardized.Jeopardized", {
   "jeopardized.JeopardyData": "JeopardyData",
   "jeopardized.JeopardyDisplay": "JeopardyDisplay",
   "jeopardized.DisplayWindow": "DisplayWindow",
-}, ({ JeopardyBoard, JeopardyData, JeopardyDisplay, DisplayWindow }) => {
+  "jeopardized.QuestionModal": "QuestionModal",
+  "gizmo-atheneum.namespaces.react.Dialog":"Dialog"
+}, ({ JeopardyBoard, JeopardyData, JeopardyDisplay, DisplayWindow, QuestionModal, Dialog }) => {
+  const questionBgClass = 'gears-bg-primary text-light rounded w-75 p-3';
   const buildBoardDisplay = function(state) {
     console.log({ state });
     const categories = Object.keys(state.board);
@@ -27,29 +30,46 @@ namespace("jeopardized.Jeopardized", {
     constructor(props) {
       super(props);
       this.state = {};
-    }
-    startGame() {
-      JeopardyData.applyBoard("level-one", (initState) => {
-        initState.display =  new DisplayWindow("playerView", "./playerview.html", JeopardyDisplay, {});
-        initState.display.open(buildBoardDisplay(initState));
-        this.setState(initState);
+      this.modals = Dialog.factory({
+        question:{
+          templateClass: QuestionModal,
+          attrs: { class: questionBgClass },
+          onClose: ({ category, price }) => {
+            var { board, prices } = this.state;
+            board = deepCopyObject(board);
+            prices = Array.from(prices);
+            delete board[category][price];
+            const displayUpdate = buildBoardDisplay({ board, prices });
+            displayUpdate.displayQuestion = undefined;
+            this.state.display.update(displayUpdate);
+            this.setState({ board, prices });
+          },
+        }
       });
     }
+    startGame(level) {
+      JeopardyData.applyBoard(level, (initState) => {
+        initState.display =  new DisplayWindow("playerView", "./playerview.html", JeopardyDisplay, { bgClass: questionBgClass });
+        initState.display.open(buildBoardDisplay(initState));
+        initState.loading = undefined;
+        this.setState(initState);
+      });
+      this.setState({ loading: true });
+    }
     selectAnswer(category, price) {
-      var { board, prices } = this.state;
-      board = deepCopyObject(board);
-      prices = Array.from(prices);
+      const { board } = this.state;
       const { question, answer } = board[category][price];
       this.state.display.update({ displayQuestion: { question, category, price } });
-      alert(`category:\n\t${category}\n\nprice:\n\t${price}\n\nquestion:\n\t${question}\n\nanswer:\n\t${answer}`);
-      delete board[category][price];
-      const displayUpdate = buildBoardDisplay({ board, prices });
-      displayUpdate.displayQuestion = undefined;
-      this.state.display.update(displayUpdate);
-      this.setState({ board, prices });
+      this.modals.question.open({ question, category, price, answer });
     }
     render() {
-      if(this.state.board) {
+      if (this.state.loading) {
+        return <div className="d-flex justify-content-center">
+          <div className="d-flex flex-column justify-content-center h-75">
+            <h1>Loading questions! ...</h1>
+          </div>
+        </div>
+      } else if(this.state.board) {
         const boardDisplay = buildBoardDisplay(this.state)
         return <JeopardyBoard 
           categories={boardDisplay.categories} 
@@ -57,7 +77,14 @@ namespace("jeopardized.Jeopardized", {
           onClick={ (catIndex, priceIndex) => this.selectAnswer(catIndex, priceIndex) }>
         </JeopardyBoard>;
       } else {
-        return <button className="btn btn-primary" onClick={() => this.startGame()}>Start Game</button>
+        return <div className="d-flex justify-content-center h-100">
+          <div className="d-flex flex-column justify-content-center h-100">
+            <button className="btn btn-primary m-4 p-2" onClick={() => this.startGame("level-one")}>Level One</button>
+            <button className="btn btn-primary m-4 p-2" onClick={() => this.startGame("level-two")}>Level Two</button>
+            <button className="btn btn-primary m-4 p-2" onClick={() => this.startGame("level-three")}>Level Three</button>
+            <button className="btn btn-primary m-4 p-2" onClick={() => this.startGame("level-four")}>Level Four</button>
+          </div>
+        </div>
       }
     }
   }

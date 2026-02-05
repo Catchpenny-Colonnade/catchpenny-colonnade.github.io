@@ -1,6 +1,7 @@
 namespace("jeopardized.JeopardyDisplay", {
-  "jeopardized.JeopardyBoard": "JeopardyBoard"
-}, ({ JeopardyBoard }) => {
+  "jeopardized.JeopardyBoard": "JeopardyBoard",
+  "jeopardized.QuestionFrame": "QuestionFrame"
+}, ({ JeopardyBoard, QuestionFrame }) => {
   return class extends React.Component {
     constructor(props) {
       super(props);
@@ -15,19 +16,23 @@ namespace("jeopardized.JeopardyDisplay", {
     render() {
       if (this.state.displayQuestion) {
         const { question, category, price } = this.state.displayQuestion;
-        return <div className="d-flex justify-content-center">
-          <div className="d-flex flex-column justify-content-center h-75">
-            <h2 className="text-light">{category}</h2>
-            <h3 className="text-light">{price}</h3>
-            <h1 className="text-light">{question}</h1>
+        return <div className="d-flex flex-column justify-content-center h-100">
+          <div className="d-flex justify-content-center">
+            <div className={ this.addlAttrs.bgClass }>
+              <QuestionFrame question={question} category={category} price={price}></QuestionFrame>
+            </div>
           </div>
         </div>;
       } else {
-        return <JeopardyBoard 
-          categories={this.state.categories} 
-          prices={this.state.prices}
-          onClick={ () => {} }>
-        </JeopardyBoard>;
+        return <div className="d-flex flex-column justify-content-center h-100">
+          <div className="d-flex justify-content-center">
+            <JeopardyBoard 
+              categories={this.state.categories} 
+              prices={this.state.prices}
+              onClick={ () => {} }>
+            </JeopardyBoard>
+          </div>
+        </div>;
       }
     }
   };
