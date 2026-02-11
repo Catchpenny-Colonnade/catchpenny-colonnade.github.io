@@ -50,7 +50,6 @@ namespace("memory.Memory", {
           this.setState({ first: undefined, second: undefined });
         }
       }
-      // todo
     }
     componentDidMount() {
       this.afterRender();
