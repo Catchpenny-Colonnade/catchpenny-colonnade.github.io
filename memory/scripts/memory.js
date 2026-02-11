@@ -3,6 +3,10 @@ namespace("memory.Memory", {
 }, ({ Icons }) => {
   const iconIndexList = "?".repeat(Icons.getIconCount()).split("").map((_,i) => i);
   const pairCount = 24;
+  const bgColor = "primary";
+  const iconArgs = {
+    fill: "red",
+  };
   const shuffle = function() {
     const allIcons = Array.from(iconIndexList);
     const deck = [];
@@ -60,8 +64,8 @@ namespace("memory.Memory", {
         <div className="row justify-content-center">
           { this.state.board.map(({ iconIndex, revealed }, index) => {
             var showCard = revealed || index == this.state.first || index == this.state.second;
-            return <button className="btn btn-primary icon-frame" onClick={() => this.click(index)}>
-              { showCard?Icons.getIconByIndex(iconIndex):Icons.getCardBack() }
+            return <button className={`btn btn-${bgColor} icon-frame`} onClick={() => this.click(index)}>
+              { showCard?Icons.getIconByIndex(iconIndex, iconArgs):Icons.getCardBack(iconArgs) }
             </button>;
           })}
         </div>
