@@ -129,7 +129,7 @@ namespace("memory.Icons", {}, () => {
   ];
   const getIcon = function(path, args) {
     return <svg width="100%" height="100%" viewBox={`0 0 ${dim.width} ${dim.width}`}>
-      <path d={path} stroke={args.stroke || "none"} stroke-width={args.stroke || 0} fill={args.fill || "none"}></path>
+      <path d={path} stroke={args.stroke || "none"} strokeWidth={args.stroke || 0} fill={args.fill || "none"}></path>
     </svg>;
   };
   return { 
