@@ -1,0 +1,29 @@
+.pale{fill:#ACF;}
+.ears{fill:#67a3ff;}
+.shade{fill:#35A;}
+.dark{fill:#021039;}
+.thick-dark {
+  stroke:#021039;
+  stroke-width:15;
+}
+.white{fill:#FFF;}
+.tongue-red{fill:#C22;}
+.heart-red{fill:#F44;}
+.water-blue{fill:#0DE;}
+.green{fill:#6A4;}
+.emoji-xs {
+  width: 5rem;
+  height: 5rem;
+}
+.emoji-sm {
+  width: 8rem;
+  height: 8rem;
+}
+.emoji-md {
+  width: 18rem;
+  height: 18rem;
+}
+.emoji-lg {
+  width: 40rem;
+  height: 40rem;
+}

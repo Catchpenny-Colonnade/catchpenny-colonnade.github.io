@@ -20,11 +20,14 @@
 
   <!-- local dependencies -->
   <script type="text/babel" src="scripts/sprocket.js"></script>
+  <script type="text/babel" src="scripts/sprocket-defs.js"></script>
   <script type="text/babel" src="scripts/update-queue.js"></script>
 
   <!-- init script -->
   <script type="text/babel">
     (function () {
+      const SprocketDefs = importNamespace("sprocket.SprocketDefs");
+      ReactDOM.createRoot(document.getElementById("defs")).render(<SprocketDefs/>);
       const Sprocket = importNamespace("sprocket.Sprocket"); // bottles.js
       ReactDOM.createRoot(document.getElementById("app-root")).render(<Sprocket />);
     })()
@@ -32,6 +35,7 @@
 </head>
 
 <body class="container bg-dark text-light">
+  <div id="defs"></div>
   <div id="app-root"></div>
 </body>
 
