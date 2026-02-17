@@ -3,7 +3,7 @@ namespace("sprocket.Sprocket", {
 }, ({ UpdateQueue }) => {
   const hungerLevels = [{
     level: "starving",
-    min: 1,
+    min: 0,
     max: 10
   },{
     level: "hungry",
@@ -20,11 +20,11 @@ namespace("sprocket.Sprocket", {
   },{
     level: "full",
     min: 90,
-    max: 100
+    max: 101
   }];
   const happinessLevels = [{
     level: "grumpy",
-    min: 1,
+    min: 0,
     max: 10
   },{
     level: "bored",
@@ -41,7 +41,7 @@ namespace("sprocket.Sprocket", {
   },{
     level: "excited",
     min: 90,
-    max: 100
+    max: 101
   }];
   const emotionTable = {
     "starving,grumpy": ["Sick"],
@@ -96,10 +96,6 @@ namespace("sprocket.Sprocket", {
       }
     }
   }
-  const bounds = {
-    min: 0,
-    max: 100
-  };
   const getDisplayValues = function({ hunger, happiness }) {
     const hungerLevel = getLevel(hunger, hungerLevels);
     const happinessLevel = getLevel(happiness, happinessLevels);
@@ -109,6 +105,16 @@ namespace("sprocket.Sprocket", {
       verb: verb || "is",
       refs: emotions[emotion]
     }
+  }
+  const bounds = {
+    min: 0,
+    max: 100
+  };
+  const inc = function(updates, property, value) {
+    updates[property] = Math.min(bounds.max, updates[property] + value);
+  }
+  const dec = function(updates, property, value) {
+    updates[property] = Math.max(bounds.min, updates[property] - value);
   }
   return class extends React.Component {
     constructor(props) {
@@ -120,28 +126,30 @@ namespace("sprocket.Sprocket", {
       this.updateQueue = new UpdateQueue(() => this.state, (updates) => this.setState(updates), 500);
       setInterval(() => {
         this.updateQueue.enqueue((updates) => {
-          updates.hunger -= 2;
-          updates.happiness -= 1;
+          dec(updates, "hunger", 2);
+          dec(updates, "happiness", 1);
+          console.log({ updates, on: "interval" });
           return updates;
         })
       }, 5000);
     }
     feed() {
       this.updateQueue.enqueue((updates) => {
-        updates.hunger += 10
-        updates.happiness += 2;
+        inc(updates, "hunger", 10);
+        inc(updates, "happiness", 2);
+        console.log({ updates, on: "feed" });
         return updates;
       })
     }
     play() {
       this.updateQueue.enqueue((updates) => {
-        updates.happiness -= 10;
-        updates.hunger += 5;
+        dec(updates, "hunger", 5);
+        inc(updates, "happiness", 10);
+        console.log({ updates, on: "play" });
         return updates;
       })
     }
     render() {
-      // todo
       const { emotion, verb, refs } = getDisplayValues(this.state);
       return <div className="d-flex flex-column justify-content-around h-100">
         <div className="d-flex justify-content-center">
