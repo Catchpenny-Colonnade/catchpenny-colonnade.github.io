@@ -1,111 +1,8 @@
 namespace("sprocket.Sprocket", {
+  "sprocket.SprocketFace": "Face",
+  "sprocket.SprocketConfig": "Config",
   "sprocket.UpdateQueue": "UpdateQueue"
-}, ({ UpdateQueue }) => {
-  const hungerLevels = [{
-    level: "starving",
-    min: 0,
-    max: 10
-  },{
-    level: "hungry",
-    min: 10,
-    max: 30
-  },{
-    level: "content",
-    min: 30,
-    max: 70
-  },{
-    level: "satisfied",
-    min: 70,
-    max: 90
-  },{
-    level: "full",
-    min: 90,
-    max: 101
-  }];
-  const happinessLevels = [{
-    level: "grumpy",
-    min: 0,
-    max: 10
-  },{
-    level: "bored",
-    min: 10,
-    max: 30
-  },{
-    level: "content",
-    min: 30,
-    max: 70
-  },{
-    level: "happy",
-    min: 70,
-    max: 90
-  },{
-    level: "excited",
-    min: 90,
-    max: 101
-  }];
-  const emotionTable = {
-    "starving,grumpy": ["Sick"],
-    "starving,bored": ["Crying"],
-    "starving,content": ["Starving"],
-    "starving,happy": ["Starving"],
-    "starving,excited": ["Starving"],
-    "hungry,grumpy": ["Grumpy"],
-    "hungry,bored": ["Hungry"],
-    "hungry,content": ["Hungry"],
-    "hungry,happy": ["Zoomies", "has the"],
-    "hungry,excited": ["Zoomies", "has the"],
-    "content,grumpy": ["Grumpy"],
-    "content,bored": ["Bored"],
-    "content,content": ["Serene"],
-    "content,happy": ["Serene"],
-    "content,excited": ["Serene"],
-    "satisfied,grumpy": ["Grumpy"],
-    "satisfied,bored": ["Bored"],
-    "satisfied,content": ["Serene"],
-    "satisfied,happy": ["Happy"],
-    "satisfied,excited": ["Excited"],
-    "full,grumpy": ["Grumpy"],
-    "full,bored": ["Bored"],
-    "full,content": ["Sleepy"],
-    "full,happy": ["Happy"],
-    "full,excited": ["Zoomies", "has the"]
-  }
-  const emotions = {
-    Sick: ["sad-eyes","open-frown","tongue","sweat"],
-    Crying: ["sad-eyes","wide-open","tears"],
-    Grumpy: ["mellow-eyed","closed-frown"],
-    Hungry: ["raised-eyes","wide-open","tongue"],
-    Bored: ["side-eyed-right","thin-lipped"],
-    Evil: ["angry-eyes","teeth-smile"],
-    Starving: ["angry-eyes","open-frown","tongue"],
-    Serene: ["closed-eyes","closed-smile"],
-    Sleepy: ["blink-eyes","thin-lipped"],
-    Happy: ["blink-eyes","teeth-smile"],
-    Excited: ["heart-eyes","teeth-smile"],
-    Zoomies: ["wide-eyed","open-smile"]
-  }
-  const dim = {
-    w: 525,
-    h: 525
-  }
-  const getLevel = function(value,levels) {
-    for(var i = 0; i < levels.length; i++) {
-      const { level, min, max } = levels[i];
-      if (value >= min && value < max) {
-        return level;
-      }
-    }
-  }
-  const getDisplayValues = function({ hunger, happiness }) {
-    const hungerLevel = getLevel(hunger, hungerLevels);
-    const happinessLevel = getLevel(happiness, happinessLevels);
-    const [emotion, verb] = emotionTable[`${hungerLevel},${happinessLevel}`];
-    return {
-      emotion,
-      verb: verb || "is",
-      refs: emotions[emotion]
-    }
-  }
+}, ({ Config, Face, UpdateQueue }) => {
   const bounds = {
     min: 0,
     max: 100
@@ -115,6 +12,9 @@ namespace("sprocket.Sprocket", {
   }
   const dec = function(updates, property, value) {
     updates[property] = Math.max(bounds.min, updates[property] - value);
+  }
+  const log = function({ hunger, happiness }, action) {
+    console.log({ hunger, happiness, action });
   }
   return class extends React.Component {
     constructor(props) {
@@ -128,7 +28,7 @@ namespace("sprocket.Sprocket", {
         this.updateQueue.enqueue((updates) => {
           dec(updates, "hunger", 2);
           dec(updates, "happiness", 1);
-          console.log({ updates, on: "interval" });
+          log(updates, "interval");
           return updates;
         })
       }, 5000);
@@ -137,7 +37,7 @@ namespace("sprocket.Sprocket", {
       this.updateQueue.enqueue((updates) => {
         inc(updates, "hunger", 10);
         inc(updates, "happiness", 2);
-        console.log({ updates, on: "feed" });
+        log(updates, "feed");
         return updates;
       })
     }
@@ -145,29 +45,23 @@ namespace("sprocket.Sprocket", {
       this.updateQueue.enqueue((updates) => {
         dec(updates, "hunger", 5);
         inc(updates, "happiness", 10);
-        console.log({ updates, on: "play" });
+        log(updates, "play");
         return updates;
       })
     }
     render() {
-      const { emotion, verb, refs } = getDisplayValues(this.state);
-      return <div className="d-flex flex-column justify-content-around h-100">
-        <div className="d-flex justify-content-center">
+      const { emotion, verb, refs } = Config.getDisplayValues(this.state);
+      return <div className="d-flex flex-column justify-content-center h-100">
+        <div className="d-flex justify-content-center p-2">
           <h1>Sprocket</h1>
         </div>
-        <div className="d-flex justify-content-center">
-          <h3>{verb} {emotion}</h3>
+        <div className="d-flex justify-content-center p-2">
+          <h2>{verb} {emotion}</h2>
         </div>
-        <div className="d-flex justify-content-center">
-          <div className="emoji-lg m-2">
-            <svg width="100%" height="100%" viewBox={`0 0 ${dim.w} ${dim.h}`}>
-              <rect width={dim.w} height={dim.h} rx="100" ry="100" fill="white" stroke="black" strokeWidth="10" />
-              <use href="#base" />
-              { refs.map(href => <use href={`#${href}`} />) }
-            </svg>
-          </div>
+        <div className="d-flex justify-content-center p-2">
+          <Face label={emotion} emojiScale="lg" bgColor="white" refs={refs}/>
         </div>
-        <div className="d-flex justify-content-center">
+        <div className="d-flex justify-content-center p-2">
           <div className="p-3">
             <button className="btn btn-primary" onClick={() => this.feed()}><h3 className="p-1">Feed!</h3></button>
           </div>

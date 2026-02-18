@@ -24,6 +24,10 @@
   height: 18rem;
 }
 .emoji-lg {
+  width: 29rem;
+  height: 29rem;
+}
+.emoji-xl {
   width: 40rem;
   height: 40rem;
 }
