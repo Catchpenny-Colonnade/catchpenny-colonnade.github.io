@@ -50,6 +50,23 @@ namespace("sprocket.SprocketsFaces", {
         </table>
       </div>
       <div className="d-flex justify-content-center w-100">
+        <h1>Emotions</h1>
+      </div>
+      <div className="d-flex flex-wrap justify-content-center w-100">
+        { Object.entries(Config.getEmotions()).map(([emotion, refs]) => <div className="d-flex justify-content-center align-items-center">
+            <div>
+              <h5>{emotion}</h5>
+              <ul>
+                { refs.map(ref => <li>{ ref }</li>) }
+              </ul>
+            </div>
+            <div>
+              <Face label={emotion} emojiScale="xs" bgColor="white" refs={refs}/>
+            </div>
+          </div>
+        ) }
+      </div>
+      <div className="d-flex justify-content-center w-100">
         <h1>Eyes</h1>
       </div>
       <div className="d-flex flex-wrap justify-content-center w-100">

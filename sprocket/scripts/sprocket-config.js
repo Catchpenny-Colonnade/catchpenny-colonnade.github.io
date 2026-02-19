@@ -325,14 +325,18 @@ namespace("sprocket.SprocketConfig", {}, () => {
   },{
     level: "hungry",
     min: 10,
-    max: 30
+    max: 25
   },{
-    level: "content",
-    min: 30,
-    max: 70
+    level: "'I Could Eat'",
+    min: 25,
+    max: 50
+  },{
+    level: "'I'm Good'",
+    min: 50,
+    max: 75
   },{
     level: "satisfied",
-    min: 70,
+    min: 75,
     max: 90
   },{
     level: "full",
@@ -340,20 +344,24 @@ namespace("sprocket.SprocketConfig", {}, () => {
     max: 101
   }];
   const happinessLevels = [{
-    level: "grumpy",
+    level: "angry",
     min: 0,
     max: 10
   },{
-    level: "bored",
+    level: "grumpy",
     min: 10,
-    max: 30
+    max: 25
+  },{
+    level: "bored",
+    min: 25,
+    max: 50
   },{
     level: "content",
-    min: 30,
-    max: 70
+    min: 50,
+    max: 75
   },{
     level: "happy",
-    min: 70,
+    min: 75,
     max: 90
   },{
     level: "excited",
@@ -376,26 +384,37 @@ namespace("sprocket.SprocketConfig", {}, () => {
   const getHungerLevel = (value) => getLevel(value, hungerLevels);
   const getHappinessLevel = (value) => getLevel(value, happinessLevels);
   const emotionTable = {
+    "starving,angry": ["Sick"],
     "starving,grumpy": ["Sick"],
     "starving,bored": ["Crying"],
     "starving,content": ["Starving"],
     "starving,happy": ["Starving"],
     "starving,excited": ["Starving"],
+    "hungry,angry": ["Grumpy"],
     "hungry,grumpy": ["Grumpy"],
     "hungry,bored": ["Hungry"],
     "hungry,content": ["Hungry"],
     "hungry,happy": ["Zoomies", "has the"],
     "hungry,excited": ["Zoomies", "has the"],
-    "content,grumpy": ["Grumpy"],
-    "content,bored": ["Bored"],
-    "content,content": ["Serene"],
-    "content,happy": ["Serene"],
-    "content,excited": ["Serene"],
+    "'I Could Eat',angry": ["Grumpy"],
+    "'I Could Eat',grumpy": ["Grumpy"],
+    "'I Could Eat',bored": ["Bored"],
+    "'I Could Eat',content": ["Serene"],
+    "'I Could Eat',happy": ["Serene"],
+    "'I Could Eat',excited": ["Serene"],
+    "'I'm Good',angry": ["Grumpy"],
+    "'I'm Good',grumpy": ["Grumpy"],
+    "'I'm Good',bored": ["Bored"],
+    "'I'm Good',content": ["Serene"],
+    "'I'm Good',happy": ["Serene"],
+    "'I'm Good',excited": ["Serene"],
+    "satisfied,angry": ["Grumpy"],
     "satisfied,grumpy": ["Grumpy"],
     "satisfied,bored": ["Bored"],
     "satisfied,content": ["Serene"],
     "satisfied,happy": ["Happy"],
     "satisfied,excited": ["Excited"],
+    "full,angry": ["Grumpy"],
     "full,grumpy": ["Grumpy"],
     "full,bored": ["Bored"],
     "full,content": ["Sleepy"],
@@ -419,6 +438,12 @@ namespace("sprocket.SprocketConfig", {}, () => {
     Excited: ["heart-eyes","teeth-smile"],
     Zoomies: ["wide-eyed","open-smile"]
   }
+  const getEmotions = function() {
+    return Object.entries(emotions).reduce((acc, [emotion, refs]) => {
+      acc[emotion] = Array.from(refs)
+      return acc;
+    }, {});
+  }
   const getRefsForEmotion = function(emotion) {
     return Array.from(emotions[emotion]);
   }
@@ -432,16 +457,44 @@ namespace("sprocket.SprocketConfig", {}, () => {
       refs: getRefsForEmotion(emotion)
     }
   }
-  const bounds = {
-    min: 0,
-    max: 100,
-    init: 50
+  const getInitBounds = function() {
+    return Object.entries({
+      min: 0,
+      max: 100,
+      init: 50,
+      interval: 500
+    }).reduce((acc, [k,v]) => {
+      acc[k] = v;
+      return acc;
+    }, {});
   };
-  const inc = function(updates, property, value) {
-    updates[property] = Math.min(bounds.max, updates[property] + value);
+  const updates = {
+    decay: {
+      happiness: ["dec", 1],
+      hunger: ["dec", 2],
+    },
+    feed: {
+      happiness: ["inc", 2],
+      hunger: ["inc", 10]
+    },
+    play: {
+      happiness: ["inc", 10],
+      hunger: ["dec", 5]
+    }
   }
-  const dec = function(updates, property, value) {
-    updates[property] = Math.max(bounds.min, updates[property] - value);
+  const math = {
+    inc: function(updates, property, value) {
+     updates[property] = Math.min(bounds.max, updates[property] + value);
+    },
+    dec: function(updates, property, value) {
+      updates[property] = Math.max(bounds.min, updates[property] - value);
+    }
+  }
+  const updateState = function(state, action) {
+    const steps = updates[action];
+    Object.entries(steps).forEach(([property, [direction, value]]) => {
+      math[direction](state, property, value);
+    });
   }
   return { 
     getEyes,
@@ -453,7 +506,9 @@ namespace("sprocket.SprocketConfig", {}, () => {
     getHungerLevel,
     getHappinessLevel,
     getEmotion,
+    getEmotions,
     getRefsForEmotion,
-    getDisplayValues
+    getDisplayValues,
+    getInitBounds
   };
 });
