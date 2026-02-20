@@ -457,10 +457,12 @@ namespace("sprocket.SprocketConfig", {}, () => {
       refs: getRefsForEmotion(emotion)
     }
   }
+  const bounds = {
+      min: 0,
+      max: 100
+  }
   const getInitBounds = function() {
     return Object.entries({
-      min: 0,
-      max: 100,
       init: 50,
       interval: 500
     }).reduce((acc, [k,v]) => {
@@ -509,6 +511,7 @@ namespace("sprocket.SprocketConfig", {}, () => {
     getEmotions,
     getRefsForEmotion,
     getDisplayValues,
-    getInitBounds
+    getInitBounds,
+    updateState
   };
 });

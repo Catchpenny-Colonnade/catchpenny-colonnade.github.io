@@ -6,7 +6,7 @@ namespace("sprocket.Sprocket", {
   const log = function({ hunger, happiness }, action) {
     console.log({ hunger, happiness, action });
   }
-  const { min, max, init, interval } = Config.getInitBounds();
+  const { init, interval } = Config.getInitBounds();
   return class extends React.Component {
     constructor(props) {
       super(props);
@@ -17,8 +17,7 @@ namespace("sprocket.Sprocket", {
       this.updateQueue = new UpdateQueue(() => this.state, (updates) => this.setState(updates), interval);
       setInterval(() => {
         this.updateQueue.enqueue((updates) => {
-          dec(updates, "hunger", 2);
-          dec(updates, "happiness", 1);
+          Config.updateState(updates, "decay");
           log(updates, "interval");
           return updates;
         })
@@ -26,16 +25,14 @@ namespace("sprocket.Sprocket", {
     }
     feed() {
       this.updateQueue.enqueue((updates) => {
-        inc(updates, "hunger", 10);
-        inc(updates, "happiness", 2);
+        Config.updateState(updates, "feed");
         log(updates, "feed");
         return updates;
       })
     }
     play() {
       this.updateQueue.enqueue((updates) => {
-        dec(updates, "hunger", 5);
-        inc(updates, "happiness", 10);
+        Config.updateState(updates, "play");
         log(updates, "play");
         return updates;
       })

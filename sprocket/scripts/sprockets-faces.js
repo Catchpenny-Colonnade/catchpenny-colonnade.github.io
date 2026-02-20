@@ -20,12 +20,6 @@ namespace("sprocket.SprocketsFaces", {
   return function (props) {
     return <div className="d-flex flex-column">
       <div className="d-flex justify-content-center w-100">
-        <h1>Base</h1>
-      </div>
-      <div className="d-flex flex-wrap justify-content-center w-100">
-        <Face label="" emojiScale="lg" bgColor="white" refs={[]}/>
-      </div>
-      <div className="d-flex justify-content-center w-100">
         <h1>Emotion Table</h1>
       </div>
       <div className="d-flex justify-content-center w-100">

@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="styles.css" />
 
     <!-- local dependencies -->
+    <script type="text/babel" src="scripts/face-builder.js"></script>
     <script type="text/babel" src="scripts/sprocket-config.js"></script>
     <script type="text/babel" src="scripts/sprocket-defs.js"></script>
     <script type="text/babel" src="scripts/sprocket-face.js"></script>
@@ -28,13 +29,16 @@
       (function () {
         const SprocketsFaces = importNamespace("sprocket.SprocketsFaces");
         const SprocketDefs = importNamespace("sprocket.SprocketDefs");
+        const FaceBuilder = importNamespace("sprocket.FaceBuilder");
         ReactDOM.createRoot(document.getElementById("defs")).render(<SprocketDefs/>);
+        ReactDOM.createRoot(document.getElementById("builder")).render(<FaceBuilder/>);
         ReactDOM.createRoot(document.getElementById("app-root")).render(<SprocketsFaces emojiScale="md" baseOnly={false}/>);
       })()
     </script>
   </head>
   <body class="container bg-dark text-light">
     <div id="defs"></div>
+    <div id="builder"></div>
     <div id="app-root"></div>
   </body>
 </html>
