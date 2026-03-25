@@ -2,6 +2,15 @@
     <head>
         <title>Minesweeper</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="A classic Minesweeper game - find all the safe squares without hitting a mine!">
+        <meta name="theme-color" content="#007bff">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-title" content="Minesweeper">
+        <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23007bff' width='192' height='192'/><text x='50%' y='50%' font-size='120' fill='white' text-anchor='middle' dominant-baseline='central' font-family='Arial'>💣</text></svg>">
+        <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23007bff' width='192' height='192'/><text x='50%' y='50%' font-size='120' fill='white' text-anchor='middle' dominant-baseline='central' font-family='Arial'>💣</text></svg>">
+        <link rel="manifest" href="manifest.json">
 
         <!-- Bootstrap -->
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" />
@@ -32,6 +41,21 @@
                 const Minesweeper = importNamespace("minesweeper.Minesweeper");
                 ReactDOM.createRoot(document.getElementById("app-root")).render(<Minesweeper/>);
             })()
+        </script>
+
+        <!-- Service Worker Registration -->
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('service-worker.js')
+                        .then((registration) => {
+                            console.log('Service Worker registered successfully:', registration);
+                        })
+                        .catch((error) => {
+                            console.log('Service Worker registration failed:', error);
+                        });
+                });
+            }
         </script>
     </head>
     <body class="container bg-dark text-light">

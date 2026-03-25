@@ -1,0 +1,55 @@
+{
+  "name": "Minesweeper Game",
+  "short_name": "Minesweeper",
+  "description": "A classic Minesweeper game - find all the safe squares without hitting a mine!",
+  "start_url": "/catchpenny-colonnade.github.io/minesweeper/",
+  "display": "standalone",
+  "background_color": "#212529",
+  "theme_color": "#007bff",
+  "scope": "/catchpenny-colonnade.github.io/minesweeper/",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23007bff' width='192' height='192'/><text x='50%' y='50%' font-size='120' fill='white' text-anchor='middle' dominant-baseline='central' font-family='Arial'>💣</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%23007bff' width='512' height='512'/><text x='50%' y='50%' font-size='320' fill='white' text-anchor='middle' dominant-baseline='central' font-family='Arial'>💣</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%23212529' width='540' height='720'/><text x='50%' y='50%' font-size='200' fill='%23007bff' text-anchor='middle' dominant-baseline='central' font-family='Arial'>Minesweeper</text></svg>",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><rect fill='%23212529' width='1280' height='720'/><text x='50%' y='50%' font-size='200' fill='%23007bff' text-anchor='middle' dominant-baseline='central' font-family='Arial'>Minesweeper</text></svg>",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "form_factor": "wide"
+    }
+  ],
+  "categories": ["games"],
+  "shortcuts": [
+    {
+      "name": "New Game",
+      "short_name": "New Game",
+      "description": "Start a new minesweeper game",
+      "url": "/catchpenny-colonnade.github.io/minesweeper/",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><rect fill='%23007bff' width='96' height='96'/><text x='50%' y='50%' font-size='60' fill='white' text-anchor='middle' dominant-baseline='central' font-family='Arial'>💣</text></svg>",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ]
+}
