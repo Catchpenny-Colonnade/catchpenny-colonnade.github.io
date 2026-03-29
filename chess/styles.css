@@ -1,0 +1,9 @@
+td {
+  text-align: center;
+}
+td.space {
+  font-size: 2.25em;
+}
+td.promoteable {
+  font-size: 3.5em;
+}
