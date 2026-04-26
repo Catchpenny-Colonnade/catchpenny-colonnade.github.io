@@ -1,0 +1,55 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #1a1a1a;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    touch-action: none;
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    max-width: 90vw;
+}
+
+canvas {
+    border: 3px solid #00ff00;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    max-width: 90vw;
+    max-height: 90vh;
+    aspect-ratio: 1;
+    touch-action: none;
+}
+
+#ui {
+    color: #00ff00;
+    text-align: center;
+    font-size: 18px;
+}
+
+#score {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#instructions {
+    font-size: 14px;
+    color: #888;
+    margin-top: 20px;
+    text-align: center;
+    max-width: 90vw;
+}
