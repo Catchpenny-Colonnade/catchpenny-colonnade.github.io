@@ -20,3 +20,4 @@ Gemfile.lock
 .lsp/
 **/node_modules/**
 snake2/package-lock.json
+.playwright-mcp/**

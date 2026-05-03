@@ -1,0 +1,16 @@
+{
+  "name": "maze-game-tests",
+  "version": "1.0.0",
+  "description": "Playwright tests for MAZE game",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:ui": "playwright test --ui",
+    "server": "npx http-server -p 8080 -g"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0",
+    "http-server": "^14.1.1"
+  }
+}

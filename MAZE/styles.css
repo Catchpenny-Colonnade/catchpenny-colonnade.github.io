@@ -1,0 +1,464 @@
+/* Terminal Aesthetic CSS for MAZE Game */
+
+:root {
+  --terminal-bg: #000000;
+  --terminal-text: #00FF00;
+  --terminal-accent: #00DD00;
+  --terminal-error: #FF0000;
+  --terminal-font: 'Courier New', Courier, monospace;
+  --line-height: 1.5;
+  --char-delay: 40ms;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--terminal-bg);
+  color: var(--terminal-text);
+  font-family: var(--terminal-font);
+  overflow: hidden;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+/* Splash Screen */
+.splash-screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #001100 0%, #000000 100%);
+  cursor: pointer;
+}
+
+.splash-content {
+  text-align: center;
+  color: var(--terminal-text);
+  user-select: none;
+}
+
+.splash-content h1 {
+  font-size: clamp(48px, 10vw, 96px);
+  margin: 0;
+  padding: 0;
+  font-weight: bold;
+  letter-spacing: 8px;
+  text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.splash-content p {
+  font-size: clamp(14px, 2vw, 24px);
+  margin: 10px 0;
+  letter-spacing: 2px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+  }
+  50% {
+    opacity: 0.8;
+    text-shadow: 0 0 30px rgba(0, 255, 0, 0.7);
+  }
+}
+
+.terminal-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* Panels wrapper - top half */
+.panels-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 auto;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* Image Viewport - Left 50% */
+.image-viewport {
+  flex: 0 0 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: #000000;
+}
+
+.image-viewport img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+}
+
+/* Console Container - Right 50% */
+.console-container {
+  flex: 0 0 50%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Text Viewport */
+.text-viewport {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid var(--terminal-text);
+  padding: 10px;
+  font-size: clamp(14px, 2vw, 24px);
+  line-height: var(--line-height);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  background: var(--terminal-bg);
+}
+
+.text-viewport::-webkit-scrollbar {
+  width: 8px;
+}
+
+.text-viewport::-webkit-scrollbar-track {
+  background: var(--terminal-bg);
+}
+
+.text-viewport::-webkit-scrollbar-thumb {
+  background: var(--terminal-text);
+  border-radius: 4px;
+}
+
+.text-viewport::-webkit-scrollbar-thumb:hover {
+  background: var(--terminal-accent);
+}
+
+.text-line {
+  margin: 0;
+  padding: 0;
+}
+
+/* Console Container - Right Side */
+.console-container {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+}
+
+/* Command Line Section */
+.command-section {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 5px;
+}
+
+.command-input-area {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: clamp(12px, 1.8vw, 18px);
+}
+
+.command-prompt {
+  color: var(--terminal-text);
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.command-input {
+  flex: 1;
+  background: var(--terminal-bg);
+  color: var(--terminal-text);
+  border: none;
+  border-bottom: 1px solid var(--terminal-text);
+  padding: 5px;
+  font-family: var(--terminal-font);
+  font-size: clamp(12px, 1.8vw, 18px);
+  outline: none;
+}
+
+.command-input::placeholder {
+  color: #00660066;
+}
+
+.command-input:focus {
+  border-bottom-color: var(--terminal-accent);
+  box-shadow: 0 1px 0 var(--terminal-accent);
+}
+
+/* Command Buttons */
+.button-grid {
+  display: none;
+}
+
+.command-button {
+  background: var(--terminal-bg);
+  color: var(--terminal-text);
+  border: 1px solid var(--terminal-text);
+  padding: 8px 12px;
+  font-family: var(--terminal-font);
+  font-size: clamp(11px, 1.5vw, 14px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.command-button:hover {
+  background: var(--terminal-text);
+  color: var(--terminal-bg);
+  border-color: var(--terminal-accent);
+  box-shadow: 0 0 5px var(--terminal-accent);
+}
+
+.command-button:active {
+  transform: scale(0.95);
+}
+
+.command-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: #666666;
+  color: #666666;
+}
+
+/* Status Line */
+.status-line {
+  display: none;
+}
+
+.status-item {
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+.status-item span {
+  color: var(--terminal-accent);
+}
+
+/* Message Display */
+.message {
+  color: var(--terminal-text);
+  line-height: var(--line-height);
+}
+
+.message.error {
+  color: var(--terminal-error);
+}
+
+.message.hint {
+  color: var(--terminal-accent);
+}
+
+.message.success {
+  color: var(--terminal-text);
+}
+
+/* Door Options */
+.door-options {
+  display: none;
+}
+
+.door-button {
+  display: inline-block;
+  background: var(--terminal-bg);
+  color: var(--terminal-text);
+  border: 1px solid var(--terminal-text);
+  padding: 5px 8px;
+  margin: 3px 5px 3px 0;
+  font-family: var(--terminal-font);
+  font-size: 0.9em;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.15s ease;
+}
+
+.door-button:hover {
+  background: var(--terminal-text);
+  color: var(--terminal-bg);
+  box-shadow: 0 0 3px var(--terminal-accent);
+}
+
+.door-button:active {
+  transform: scale(0.95);
+}
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+  .panels-wrapper {
+    flex-direction: column;
+  }
+
+  .image-viewport {
+    flex: 0 0 35vh;
+  }
+
+  .console-container {
+    flex: 0 0 auto;
+    flex: 1 1 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .terminal-container {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .panels-wrapper {
+    gap: 8px;
+  }
+
+  .image-viewport {
+    flex: 0 0 30vh;
+  }
+
+  .text-viewport {
+    font-size: clamp(12px, 1.8vw, 18px);
+  }
+
+  .command-input-area {
+    font-size: clamp(11px, 1.5vw, 16px);
+  }
+}
+
+@media (max-width: 480px) {
+  .terminal-container {
+    padding: 6px;
+    gap: 6px;
+  }
+
+  .panels-wrapper {
+    gap: 6px;
+  }
+
+  .image-viewport {
+    flex: 0 0 25vh;
+  }
+
+  .text-viewport {
+    font-size: 12px;
+  }
+
+  .command-input {
+    font-size: 12px;
+  }
+}
+
+/* Victory Screen */
+.victory-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 20px;
+  line-height: 2;
+}
+
+.victory-screen h1 {
+  font-size: clamp(24px, 5vw, 48px);
+  color: var(--terminal-accent);
+  margin: 0 0 20px 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.victory-screen p {
+  font-size: clamp(14px, 2vw, 20px);
+  margin: 10px 0;
+}
+
+.victory-screen .stats {
+  margin: 30px 0;
+  color: var(--terminal-text);
+}
+
+.victory-screen .stat-item {
+  font-size: clamp(12px, 1.8vw, 18px);
+  margin: 8px 0;
+}
+
+.victory-screen .stat-value {
+  color: var(--terminal-accent);
+  font-weight: bold;
+}
+
+/* Utility Classes */
+.hidden {
+  display: none;
+}
+
+.blinking-cursor::after {
+  content: '_';
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 20px;
+}
+
+.loading::after {
+  content: '';
+  display: inline-block;
+  animation: dots 1.5s steps(4, end) infinite;
+  margin-left: 10px;
+}
+
+@keyframes dots {
+  0%, 20% {
+    content: '';
+  }
+  40% {
+    content: '.';
+  }
+  60% {
+    content: '..';
+  }
+  80%, 100% {
+    content: '...';
+  }
+}
