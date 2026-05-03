@@ -18,8 +18,6 @@ const MAZEGame = () => {
   const [hintsUsed, setHintsUsed] = useState(0);
   const [maxHints] = useState(5);
   const [gameWon, setGameWon] = useState(false);
-  const [showRevisitPrompt, setShowRevisitPrompt] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState(null);
 
   // Display State
   const [displayText, setDisplayText] = useState('');
@@ -32,7 +30,7 @@ const MAZEGame = () => {
   const typewriterRef = useRef(new window.TypewriterEngine({ charDelay: 40 }));
   const textViewportRef = useRef(null);
   const animationTimeoutRef = useRef(null);
-  const [isFastForwarding, setIsFastForwarding] = useState(false);
+  const isFastForwardingRef = useRef(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const commandInputRef = useRef(null);
 
@@ -70,15 +68,16 @@ const MAZEGame = () => {
 
       // Animate the text by gradually updating state
       setIsAnimating(true);
-      setIsFastForwarding(false);
+      isFastForwardingRef.current = false;
       await new Promise((resolve) => {
         let charIndex = 0;
 
         const animateChar = () => {
-          if (isFastForwarding) {
+          if (isFastForwardingRef.current) {
             // Skip to end immediately
             setDisplayText(newTextWithSeparator);
             setIsAnimating(false);
+            isFastForwardingRef.current = false;
             resolve();
             return;
           }
@@ -91,6 +90,7 @@ const MAZEGame = () => {
             // Ensure final state is set
             setDisplayText(newTextWithSeparator);
             setIsAnimating(false);
+            isFastForwardingRef.current = false;
             resolve();
           }
         };
@@ -101,6 +101,12 @@ const MAZEGame = () => {
       // Check for victory
       if (currentRoom === 'Room-45' && gameWon === false) {
         setGameWon(true);
+      }
+
+      // Check if room has no doors
+      if (!room.nextRooms || room.nextRooms.length === 0) {
+        const gameOverMsg = 'GAME OVER';
+        setDisplayText(prev => prev + '\n\n' + gameOverMsg);
       }
     };
 
@@ -188,7 +194,23 @@ const MAZEGame = () => {
         const msg = 'No more hints available!';
         setDisplayText(displayText ? displayText + '\n\n' + msg : msg);
       } else {
-        const msg = 'Use the HELP command to see available commands.';
+        // Get all rooms from game data
+        const allRooms = Object.keys(gameData)
+          .filter(key => key.startsWith('Room-'))
+          .sort((a, b) => {
+            const numA = parseInt(a.split('-')[1]);
+            const numB = parseInt(b.split('-')[1]);
+            return numA - numB;
+          });
+
+        // Separate visited and not visited
+        const visitedList = allRooms.filter(room => visitedRooms.has(room));
+        const notVisitedList = allRooms.filter(room => !visitedRooms.has(room));
+
+        const msg = 
+          `ROOMS VISITED (${visitedList.length}):\n${visitedList.join(', ')}\n\n` +
+          `ROOMS NOT VISITED (${notVisitedList.length}):\n${notVisitedList.join(', ')}`;
+        
         setDisplayText(displayText ? displayText + '\n\n' + msg : msg);
         setHintsUsed(hintsUsed + 1);
       }
@@ -223,14 +245,6 @@ const MAZEGame = () => {
 
       // Check if room exists in valid nextRooms
       if (validNextRooms.includes(roomKey)) {
-        // Check if already visited (show prompt)
-        if (visitedRooms.has(roomKey)) {
-          setShowRevisitPrompt(true);
-          setPendingNavigation(roomKey);
-          setCommandInput('');
-          return;
-        }
-
         // Navigate to room
         navigateToRoom(roomKey);
       } else if (gameData[roomKey]) {
@@ -261,63 +275,30 @@ const MAZEGame = () => {
     setVisitedRooms(newVisited);
     setCurrentRoom(roomKey);
     setMoveCount(moveCount + 1);
-
-    // Clear state
-    setShowRevisitPrompt(false);
-    setPendingNavigation(null);
   };
 
   // Handle door button click
   const handleDoorClick = (roomKey) => {
-    if (visitedRooms.has(roomKey)) {
-      setShowRevisitPrompt(true);
-      setPendingNavigation(roomKey);
-    } else {
-      navigateToRoom(roomKey);
-    }
+    navigateToRoom(roomKey);
   };
 
   // Handle keyboard input
   const handleKeyDown = (e) => {
     // Fast-forward animation with Shift key
     if (e.shiftKey && isAnimating) {
-      setIsFastForwarding(true);
-      if (animationTimeoutRef.current) {
-        clearTimeout(animationTimeoutRef.current);
-      }
+      isFastForwardingRef.current = true;
       return;
     }
 
     if (e.key === 'Enter') {
       e.preventDefault();
-      
-      // Handle revisit prompt YES/NO
-      if (showRevisitPrompt) {
-        if (commandInput.trim().toUpperCase() === 'YES') {
-          confirmRevisit();
-          setCommandInput('');
-        } else if (commandInput.trim().toUpperCase() === 'NO') {
-          setShowRevisitPrompt(false);
-          setPendingNavigation(null);
-          setCommandInput('');
-        }
-      } else {
-        executeCommand(commandInput);
-      }
+      executeCommand(commandInput);
     } else if (e.key === ' ' && isAnimating) {
       // Spacebar skips animation entirely
       e.preventDefault();
-      if (animationTimeoutRef.current) {
-        clearTimeout(animationTimeoutRef.current);
-      }
-      setIsFastForwarding(true);
-    }
-  };
-
-  // Confirm revisit navigation
-  const confirmRevisit = () => {
-    if (pendingNavigation) {
-      navigateToRoom(pendingNavigation);
+      isFastForwardingRef.current = true;
+      // Don't clear the timeout - let the animation loop check the flag
+      // and display the rest of the text on the next iteration
     }
   };
 
@@ -438,19 +419,6 @@ const MAZEGame = () => {
       {/* Command Section - Full width at bottom */}
       <div className="command-section">
         {/* Revisit Confirmation */}
-        {showRevisitPrompt && (
-          <div
-            style={{
-              border: '1px solid #00FF00',
-              padding: '8px',
-              marginBottom: '8px',
-              backgroundColor: '#001100'
-            }}
-          >
-            <div style={{ marginBottom: '8px' }}>You have already visited this room. Enter anyway? (YES/NO)</div>
-          </div>
-        )}
-
         {/* Command Input */}
         <div className="command-input-area">
           <span className="command-prompt">&gt;</span>
