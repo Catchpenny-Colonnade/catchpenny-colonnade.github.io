@@ -318,13 +318,45 @@ k.onKeyDown((key) => {
 });
 
 // Canvas click handler for mobile start/restart
-document.querySelector("canvas").addEventListener("click", () => {
+const canvas = document.querySelector("canvas");
+canvas.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (!gameState.gameStarted) {
         if (gameState.gameOver) {
             initGame();
         }
         gameState.gameStarted = true;
         updateUI();
+    } else if (gameState.gameOver) {
+        // Allow tapping to restart when game is over
+        initGame();
+        gameState.gameStarted = true;
+        updateUI();
+    }
+});
+
+// Also handle touch events as taps (for mobile)
+canvas.addEventListener("touchend", (e) => {
+    if (e.touches.length === 0) { // Only if all touches are released
+        const diffX = Math.abs(e.changedTouches[0].clientX - touchStartX);
+        const diffY = Math.abs(e.changedTouches[0].clientY - touchStartY);
+        const minSwipeDistance = 30;
+        
+        // Only treat as tap if it wasn't a swipe
+        if (diffX < minSwipeDistance && diffY < minSwipeDistance) {
+            if (!gameState.gameStarted) {
+                if (gameState.gameOver) {
+                    initGame();
+                }
+                gameState.gameStarted = true;
+                updateUI();
+            } else if (gameState.gameOver) {
+                initGame();
+                gameState.gameStarted = true;
+                updateUI();
+            }
+        }
     }
 });
 
