@@ -2,6 +2,8 @@
   (:require [clojure.test :refer :all]
             [sudoku-clj.core :refer :all]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+;; Tests for core module entry points
+(deftest main-runs
+  (testing "Main function can be called without errors"
+    (is (nil? (-main)))))
+
