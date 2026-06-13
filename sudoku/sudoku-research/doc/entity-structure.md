@@ -7,9 +7,9 @@ This document is outlining the structure of the objects in the database, the dat
 ### Original data
 
 I want to store the 1M puzzles currently in the other repo to be easily searched by each of the following properties
-* puzzle (the clues)
-* solution
-* clue count
+* puzzle (the initial clues as an 81-character string with 0s for empty cells)
+* solution (the fully solved grid as an 81-character string with all cells filled)
+* clue count (number of given clues in the puzzle)
 
 ### Permutations
 
@@ -34,6 +34,12 @@ As we find unique forms, we will be able to add them to the cardinal forms table
 * clue count
 
 since we're creating this entry in parallel to the permutations, the "original" column in the permutations table could be a foreign key to this table.
+
+## Implementation Notes
+
+**Optimization: Unified Orderings Table**
+
+The design calls for separate `row_orders` and `column_orders` tables. However, since the transformation logic is identical for both (permutations of 0-8 indices accounting for band/stack swaps and within-band/stack swaps), we consolidate into a single `orderings` table with 1,296 records. The `permutations` table references this table twice: `row_order_id` and `column_order_id` both point to `orderings(id)`. This eliminates duplication and halves the storage/lookup cost.
 
 ## Purpose / next steps
 

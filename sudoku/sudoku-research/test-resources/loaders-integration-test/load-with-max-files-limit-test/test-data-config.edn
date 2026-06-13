@@ -1,0 +1,4 @@
+;; Test data configuration
+;; Paths to test data directories used in integration tests
+
+{:test-data-dir "test-resources/loaders-integration-test/load-with-max-files-limit-test/test-data"}

@@ -1,0 +1,26 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "lein-test-once",
+			"type": "shell",
+			"command": "lein",
+			"args": [
+				"test"
+			],
+			"isBackground": false
+		},
+		{
+			"label": "lein-db-split-tests",
+			"type": "shell",
+			"command": "lein",
+			"args": [
+				"test",
+				"sudoku-research.db-test",
+				"sudoku-research.equivalence-test",
+				"sudoku-research.permutations-test"
+			],
+			"isBackground": false
+		}
+	]
+}

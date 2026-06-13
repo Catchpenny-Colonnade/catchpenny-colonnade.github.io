@@ -1,46 +1,58 @@
-# Quick Reference: Docker + PostgreSQL Setup
+# Quick Reference: Local PostgreSQL Setup
 
-## One-Time Setup (5 minutes)
+## One-Time Setup
 
-### 1. Install Docker Desktop
-https://www.docker.com/products/docker-desktop → Install → Restart
+### 1. Create the database
 
-### 2. Start PostgreSQL
 ```powershell
-cd sudoku-research
-.\docker-init.ps1
+createdb -U postgres sudoku_research
 ```
 
-Wait for: `[OK] PostgreSQL is ready!`
+If `createdb` is unavailable, create `sudoku_research` with pgAdmin or your local PostgreSQL tools.
 
-### 3. Initialize Schema
+### 2. Initialize schema
+
+First, confirm `resources/db-config.edn` matches your local PostgreSQL instance.
+If you want a machine-local override, copy `resources/db-config.local.example.edn` to `resources/db-config.local.edn` and edit it.
+
 ```clojure
 (require '[sudoku-research.db :as db])
 (db/initialize-db)
 ```
 
-**Done!** Database is ready.
+### 3. Verify the connection
+
+```clojure
+(db/count-original-puzzles-by-clue-count)
+```
+
+**Done.** The local database is ready.
 
 ---
 
 ## Using the Database
 
 ### Start Your REPL/App
+
 ```clojure
 (require '[sudoku-research.db :as db])
 (db/initialize-db)  ; Connects automatically
 ```
 
 ### Load 1M Puzzles
+
 ```clojure
 (db/insert-original-puzzle 
-  {:puzzle "123456789..." 
-   :solution "123456789..."
+  {:puzzle "530070000600195000098000060..."
+   :solution "534678912672195348198342567..."
    :clue-count 25
    :source-file "index00.json"})
 ```
 
+Note: `puzzle` has 0s for empty cells; `solution` has all 81 cells filled (1-9).
+
 ### Check Clue Distribution
+
 ```clojure
 (db/count-original-puzzles-by-clue-count)
 ;; [{:clue-count 17, :count 2} 
@@ -49,14 +61,18 @@ Wait for: `[OK] PostgreSQL is ready!`
 ```
 
 ### Create Canonical Form
+
 ```clojure
 (db/insert-canonical-form 
-  {:puzzle "123456789..."
-   :solution "123456789..."
+  {:puzzle "530070000600195000098000060..."
+   :solution "534678912672195348198342567..."
    :clue-count 25})
 ```
 
+Note: `puzzle` contains the initial clues with 0s for blanks; `solution` is fully solved.
+
 ### Add Permutation
+
 ```clojure
 (db/insert-permutation
   {:canonical-id 1
@@ -68,12 +84,14 @@ Wait for: `[OK] PostgreSQL is ready!`
 ```
 
 ### Find Matches
+
 ```clojure
 (db/find-permutations-for-result "123456789...")
 ;; Returns all canonical forms that generate this puzzle
 ```
 
 ### Get Unmatched Puzzles
+
 ```clojure
 (db/get-first-unmapped-puzzle-by-clue-count 25)
 ;; Returns next puzzle needing analysis
@@ -81,28 +99,11 @@ Wait for: `[OK] PostgreSQL is ready!`
 
 ---
 
-## Container Commands
-
-```powershell
-# Stop (preserves data)
-.\docker-init.ps1 -Stop
-
-# Start (restarts container)
-.\docker-init.ps1 -Start
-
-# Cleanup (deletes all data)
-.\docker-init.ps1 -Cleanup
-
-# View logs
-docker logs sudoku-postgres-research
-docker logs sudoku-postgres-research -f  # Follow
-```
-
----
-
 ## Connection Details
 
-```
+These values come from `resources/db-config.edn` by default and can be overridden by `resources/db-config.local.edn`.
+
+```text
 Host:     localhost
 Port:     5432
 Database: sudoku_research
@@ -115,78 +116,67 @@ Password: sudoku_research_dev
 ## Key Tables
 
 | Table | Purpose |
-|-------|---------|
-| `original_puzzles` | The 1M dataset |
-| `canonical_forms` | Unique representatives |
-| `permutations` | Generated variations |
-| `rotations` | 0°, 90°, 180°, 270° |
-| `row_orders` | Row reorderings |
-| `column_orders` | Column reorderings |
-| `symbol_translations` | Digit mappings |
+| ----- | ------- |
+| `original_puzzles` | The 1M dataset (puzzle: initial clues with 0s; solution: fully solved) |
+| `canonical_forms` | Unique representatives (puzzle: initial clues with 0s; solution: fully solved) |
+| `permutations` | Generated variations of canonical forms |
+| `rotations` | 0°, 90°, 180°, 270° rotations |
+| `orderings` | All valid row/column orderings (1,296 total; accounts for band/stack and within-band/stack swaps) |
+| `symbol_translations` | Digit permutations (1-9 remappings) |
 
 ---
 
 ## View Statistics
 
 ```clojure
-(db/equivalence-class-summary)
-;; Clue count distribution of discovered equivalence classes
+(db/get-equivalence-class-stats)
+;; Statistics for mapped original puzzles by clue count
 ```
 
 ---
 
-## Workflow Loop
+## Current Workflow Shape
 
 ```clojure
 (db/initialize-db)
 
-;; 1. Load all 1M puzzles
-(load-original-puzzles)
+;; 1. Insert source puzzles into original_puzzles
+(db/insert-original-puzzle puzzle-record)
 
-;; 2. For each clue count
-(doseq [clue-count (range 17 82)]
-  
-  ;; 3. While unmatched puzzles exist
-  (loop []
-    (if-let [puzzle (db/get-first-unmapped-puzzle-by-clue-count clue-count)]
-      (do
-        ;; 4. Create canonical form
-        (db/insert-canonical-form puzzle)
-        
-        ;; 5. Generate & store permutations
-        (doseq [perm (generate-perms (:puzzle puzzle))]
-          (db/insert-permutation perm))
-        
-        ;; 6. Repeat
-        (recur))
-      
-      ;; Done with this clue count
-      nil)))
+;; 2. Select a candidate canonical puzzle
+(def candidate (db/get-first-canonical-candidate 25))
 
-;; 7. View results
-(db/equivalence-class-summary)
+;; 3. Insert it as a canonical form
+(def canonical (db/insert-canonical-form candidate))
+
+;; 4. Generate permutations with sudoku-research.permutations/generate-permutations
+;;    and then inspect matches with db/find-permutations-for-result
 
 (db/close-db)
 ```
+
+The end-to-end discovery workflow is still evolving; use this as an API sketch rather than a finished batch script.
 
 ---
 
 ## Troubleshooting
 
 | Problem | Solution |
-|---------|----------|
-| Port 5432 in use | `docker ps` → find conflicting container |
-| Connection refused | `.\docker-init.ps1 -Start` → wait 5s |
-| Schema initialization fails | Check `docker logs sudoku-postgres-research` |
-| Need fresh data | `.\docker-init.ps1 -Cleanup` → `.\docker-init.ps1` |
+| ------- | -------- |
+| Port 5432 in use | Stop the conflicting local database service or change the PostgreSQL port |
+| Connection refused | Start PostgreSQL and confirm the code is pointing at the right host and port |
+| Authentication fails | Check `resources/db-config.local.edn` first, then `resources/db-config.edn`, or pass an explicit config map |
+| Schema initialization fails | Check PostgreSQL permissions and confirm `resources/schema.sql` is available |
 
 ---
 
 ## Files Reference
 
 | File | Purpose |
-|------|---------|
-| `docker-init.ps1` | Container lifecycle management |
+| ---- | ------- |
+| `resources/db-config.edn` | Default PostgreSQL connection settings |
+| `resources/db-config.local.example.edn` | Example machine-local override file |
+| `resources/db-config.local.edn` | Ignored machine-local PostgreSQL overrides |
 | `resources/schema.sql` | Database schema |
 | `src/sudoku_research/db.clj` | Database API |
-| `doc/DOCKER_SETUP.md` | Full setup guide |
+| `doc/POSTGRES_SETUP.md` | Full local database setup guide |

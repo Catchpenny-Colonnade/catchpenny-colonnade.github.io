@@ -1,0 +1,3 @@
+{:user "your-local-user"
+ :password "your-local-password"
+ :dbname "your-local-db"}

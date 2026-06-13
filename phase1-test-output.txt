@@ -1,0 +1,11 @@
+﻿lein : Warning: profile :integration-test not found.
+At line:1 char:1
++ lein with-profile integration-test test :only sudoku-research.end-to- ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Warning: profil...test not found. 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Couldn't find project.clj, which is needed for test
+Error encountered performing task 'test' with profile(s): 'integration-test'
+Couldn't find project.clj, which is needed for test

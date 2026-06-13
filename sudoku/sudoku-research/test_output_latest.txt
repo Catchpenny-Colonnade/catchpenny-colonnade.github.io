@@ -1,0 +1,8 @@
+
+lein test sudoku-research.db-test
+[OK] Database schema initialized
+[OK] orderings already populated (1296 records)
+[OK] symbol_translations already populated (362880 records)
+
+Ran 14 tests containing 64 assertions.
+0 failures, 0 errors.

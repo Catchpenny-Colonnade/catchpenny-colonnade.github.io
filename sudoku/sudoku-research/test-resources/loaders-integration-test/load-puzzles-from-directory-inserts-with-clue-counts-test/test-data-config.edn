@@ -1,0 +1,4 @@
+;; Test data configuration
+;; Paths to test data directories used in integration tests
+
+{:test-data-dir "test-resources/loaders-integration-test/load-puzzles-from-directory-inserts-with-clue-counts-test/test-data"}
