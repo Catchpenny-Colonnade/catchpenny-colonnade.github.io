@@ -12,7 +12,7 @@ const urlsToCache = [
   'https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css',
   'https://unpkg.com/react@18/umd/react.development.js',
   'https://unpkg.com/react-dom@18/umd/react-dom.development.js',
-  'https://unpkg.com/@babel/standalone/babel.min.js',
+  'https://unpkg.com/@babel/standalone@7.29.7/babel.min.js',
   'https://gizmo-atheneum.github.io/structure/importnamespace/script.js'
 ];
 
